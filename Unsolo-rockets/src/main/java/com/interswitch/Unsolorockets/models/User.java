@@ -2,9 +2,7 @@ package com.interswitch.Unsolorockets.models;
 
 import com.interswitch.Unsolorockets.models.enums.Gender;
 import com.interswitch.Unsolorockets.models.enums.Role;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -12,12 +10,14 @@ import java.time.LocalDate;
 @Setter
 @Getter
 @NoArgsConstructor
-//@Builder
-//@AllArgsConstructor
-
+@Entity
+@Table(name = "users")
+@Builder
+@AllArgsConstructor
 public class User {
-
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String firstName;
     private String lastName;
     @NonNull
