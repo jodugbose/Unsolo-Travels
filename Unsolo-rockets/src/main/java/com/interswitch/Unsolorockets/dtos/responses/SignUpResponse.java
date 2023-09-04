@@ -1,12 +1,12 @@
 package com.interswitch.Unsolorockets.dtos.responses;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Builder
-@RequiredArgsConstructor
 public class SignUpResponse {
     private String firstName;
     private String lastName;
