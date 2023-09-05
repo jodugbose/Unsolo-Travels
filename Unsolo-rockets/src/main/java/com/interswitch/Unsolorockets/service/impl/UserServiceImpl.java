@@ -10,12 +10,14 @@ import com.interswitch.Unsolorockets.models.enums.Gender;
 import com.interswitch.Unsolorockets.models.enums.Role;
 import com.interswitch.Unsolorockets.respository.UserRepository;
 import com.interswitch.Unsolorockets.security.IPasswordEncoder;
+import com.interswitch.Unsolorockets.service.EmailService;
 import com.interswitch.Unsolorockets.service.UserService;
 import com.interswitch.Unsolorockets.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Optional;
 @Service
 @RequiredArgsConstructor
@@ -26,8 +28,10 @@ public class UserServiceImpl implements UserService {
 
     private final IPasswordEncoder passwordEncoder;
 
+    private final EmailService emailService;
+
     @Override
-    public SignUpResponse createUser(UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException {
+    public SignUpResponse createUser(UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException, IOException {
         checkIfUserExist(userDto.getEmail());
         confirmPasswords(userDto.getPassword(), userDto.getPassword2());
 
@@ -35,6 +39,18 @@ public class UserServiceImpl implements UserService {
         User user = createUserFromDto(userDto, encodedPassword);
 
         userRepository.save(user);
+
+        String email = user.getEmail();
+        String subject = "Unsolo: Verify Profile";
+        String body = String.format("""
+                Dear %s,
+                                        
+                Welcome to unsolo.
+                
+                Click here to continue"
+                """, user.getFirstName());
+
+        emailService.sendMail(email, subject, body);
 
         return SignUpResponse.builder()
                 .firstName(user.getFirstName())
