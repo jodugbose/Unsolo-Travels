@@ -10,12 +10,14 @@ import com.interswitch.Unsolorockets.models.enums.Role;
 //import com.interswitch.Unsolorockets.respository.AdminRepository;
 //import com.interswitch.Unsolorockets.respository.TravellerRepository;
 import com.interswitch.Unsolorockets.respository.UserRepository;
+import com.interswitch.Unsolorockets.services.interfaces.EmailService;
 import com.interswitch.Unsolorockets.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Optional;
 @Service
 @RequiredArgsConstructor
@@ -23,9 +25,10 @@ public class UserServiceImpl implements UserService {
 //    private final TravellerRepository travellerRepository;
 //    private final AdminRepository adminRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     @Override
-    public SignUpResponse createUser(UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException {
+    public SignUpResponse createUser(UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException, IOException {
        checkIfUserExist(userDto.getEmail());
        confirmPasswords(userDto.getPassword(), userDto.getPassword2());
        User user = User.builder()
@@ -40,6 +43,11 @@ public class UserServiceImpl implements UserService {
 
         assignRole(userDto, user);
         userRepository.save(user);
+
+        String email = user.getEmail();
+        String subject = "Verify Unsolo Profile";
+        String body = "Welcome to Unsolo";
+        emailService.sendMail(email, subject, body);
         return SignUpResponse.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
