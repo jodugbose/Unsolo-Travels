@@ -8,10 +8,10 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-@Entity
-@Table(name = "admins")
+//@Entity
+//@Table(name = "admins")
 public class Admin extends User{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
 }
