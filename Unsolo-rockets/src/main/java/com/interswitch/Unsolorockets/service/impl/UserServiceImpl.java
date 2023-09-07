@@ -27,13 +27,13 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private  JwtTokenUtils jwtTokenUtils;
+    private JwtTokenUtils jwtTokenUtils;
 
     private final IPasswordEncoder passwordEncoder;
 
     private final EmailService emailService;
     private final HttpServletRequest request;
-    private AppUtils appUtils;
+    private final AppUtils appUtils;
 
     @Override
     public SignUpResponse createUser(UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException, IOException {
@@ -41,33 +41,32 @@ public class UserServiceImpl implements UserService {
         confirmPasswords(userDto.getPassword(), userDto.getPassword2());
 
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
-        User user = createUserFromDto(userDto, encodedPassword);
+        User createdUser = createUserFromDto(userDto, encodedPassword);
 
-
-        String token = JwtTokenUtils.generateToken(user);
-        user.setTokenForEmail(token);
+        String token = JwtTokenUtils.generateEmailVerificationToken(createdUser.getEmail());
+        createdUser.setTokenForEmail(token);
 
         String otp = String.valueOf(appUtils.generateOTP());
-        user.setValidOTP(passwordEncoder.encode(otp));
+        createdUser.setValidOTP(passwordEncoder.encode(otp));
 
         String url = "http://" + request.getServerName() + ":8080" + "/api/v1/verify-email?token="
                 + token + "&email="+ userDto.getEmail();
 
 
-        String email = user.getEmail();
+        String email = createdUser.getEmail();
         String subject = "Unsolo: Verify Profile";
         String body =
                 "<html> " +
                         "<body>" +
-                        "<h4>Hi " + user.getFirstName() + " " + user.getLastName() +",</h4> \n" +
+                        "<h4>Hi " + createdUser.getFirstName() + " " + createdUser.getLastName() +",</h4> \n" +
                         "<p>Welcome to Unsolo.\n" +
                         "To activate your Unsolo Account, verify your email address by clicking " +
                         "<a href="+url+">verify</a></p>" +
                         "</body> " +
                         "</html>";
-        emailService.sendMail(email, subject, body);
-        userRepository.save(user);
+        emailService.sendMail(email, subject, body, "text/html");
 
+        User user = userRepository.save(createdUser);
 
         return SignUpResponse.builder()
                 .firstName(user.getFirstName())

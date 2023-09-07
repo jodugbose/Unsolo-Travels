@@ -1,6 +1,6 @@
 package com.interswitch.Unsolorockets.exceptions;
 
-import com.interswitch.Unsolorockets.dtos.responses.ApiResponse;
+//import com.interswitch.Unsolorockets.dtos.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,11 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler  {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handlesAccessDeniedException(AccessDeniedException accessDeniedException){
-        ApiResponse apiResponse = ApiResponse.builder()
-                .success(false)
-                .data(accessDeniedException.getMessage())
-                .build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(accessDeniedException.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(CommonsException.class)
