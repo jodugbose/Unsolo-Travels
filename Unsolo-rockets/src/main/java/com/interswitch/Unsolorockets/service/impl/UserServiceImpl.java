@@ -1,5 +1,6 @@
 package com.interswitch.Unsolorockets.service.impl;
 
+import com.interswitch.Unsolorockets.dtos.requests.OTPRequest;
 import com.interswitch.Unsolorockets.dtos.requests.UserDto;
 import com.interswitch.Unsolorockets.dtos.responses.SignUpResponse;
 import com.interswitch.Unsolorockets.exceptions.InvalidCredentialsException;
@@ -12,7 +13,9 @@ import com.interswitch.Unsolorockets.respository.UserRepository;
 import com.interswitch.Unsolorockets.security.IPasswordEncoder;
 import com.interswitch.Unsolorockets.service.EmailService;
 import com.interswitch.Unsolorockets.service.UserService;
+import com.interswitch.Unsolorockets.utils.AppUtils;
 import com.interswitch.Unsolorockets.utils.JwtTokenUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private final IPasswordEncoder passwordEncoder;
 
     private final EmailService emailService;
+    private final HttpServletRequest request;
+    private AppUtils appUtils;
 
     @Override
     public SignUpResponse createUser(UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException, IOException {
@@ -38,19 +43,31 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
         User user = createUserFromDto(userDto, encodedPassword);
 
-        userRepository.save(user);
+
+        String token = JwtTokenUtils.generateToken(user);
+        user.setTokenForEmail(token);
+
+        String otp = String.valueOf(appUtils.generateOTP());
+        user.setValidOTP(passwordEncoder.encode(otp));
+
+        String url = "http://" + request.getServerName() + ":8080" + "/api/v1/verify-email?token="
+                + token + "&email="+ userDto.getEmail();
+
 
         String email = user.getEmail();
         String subject = "Unsolo: Verify Profile";
-        String body = String.format("""
-                Dear %s,
-                                        
-                Welcome to unsolo.
-                
-                Click here to continue"
-                """, user.getFirstName());
-
+        String body =
+                "<html> " +
+                        "<body>" +
+                        "<h4>Hi " + user.getFirstName() + " " + user.getLastName() +",</h4> \n" +
+                        "<p>Welcome to Unsolo.\n" +
+                        "To activate your Unsolo Account, verify your email address by clicking " +
+                        "<a href="+url+">verify</a></p>" +
+                        "</body> " +
+                        "</html>";
         emailService.sendMail(email, subject, body);
+        userRepository.save(user);
+
 
         return SignUpResponse.builder()
                 .firstName(user.getFirstName())
@@ -77,28 +94,6 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-private static void assignRole(UserDto userDto, User user) {
-        if(userDto.getRole() == null){
-            user.setRole(Role.TRAVELLER);
-        }
-        else {
-            user.setRole(Role.ADMIN);
-        }
-    }
-
-    private void checkIfUserExist(String email) throws UserAlreadyExistException {
-        Optional<User> existingUser = userRepository.findByEmail(email);
-        if(existingUser.isPresent()){
-            throw new UserAlreadyExistException("User with this email already exists");
-        }
-    }
-
-    private void confirmPasswords(String password1, String password2) throws PasswordMismatchException {
-        if(!(password1.equals(password2))){
-            throw new PasswordMismatchException("Password mismatch");
-        }
-    }
-
     public String authenticateUser(String email, String password) throws InvalidCredentialsException {
         Optional<User> userOptional = userRepository.findByEmail(email);
 
@@ -114,8 +109,44 @@ private static void assignRole(UserDto userDto, User user) {
         }
     }
 
+    @Override
+    public String verifyOTP(OTPRequest otpRequest) {
+        User user = userRepository.findByEmail(otpRequest.getEmailForOTP()).get();
+        if (user.isVerified()){
+            return "This account is already verified";
+        }
+
+        if (passwordEncoder.matches(otpRequest.getOtp(), user.getValidOTP())){
+            user.setVerified(true);
+            userRepository.save(user);
+            return "Verification successful";
+        }else {
+            return "Check the OTP and try again";
+        }
+    }
     private boolean confirmUserPasswords(String inputPassword, String storedPassword) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder.matches(inputPassword, storedPassword);
+    }
+
+    private void checkIfUserExist(String email) throws UserAlreadyExistException {
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        if(existingUser.isPresent()){
+            throw new UserAlreadyExistException("User with this email already exists");
+        }
+    }
+
+    private void confirmPasswords(String password1, String password2) throws PasswordMismatchException {
+        if(!(password1.equals(password2))){
+            throw new PasswordMismatchException("Password mismatch");
+        }
+    }
+    private static void assignRole(UserDto userDto, User user) {
+        if(userDto.getRole() == null){
+            user.setRole(Role.TRAVELLER);
+        }
+        else {
+            user.setRole(Role.ADMIN);
+        }
     }
 }

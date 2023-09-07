@@ -2,6 +2,7 @@ package com.interswitch.Unsolorockets.controllers;
 
 
 import com.interswitch.Unsolorockets.dtos.requests.LoginDto;
+import com.interswitch.Unsolorockets.dtos.requests.OTPRequest;
 import com.interswitch.Unsolorockets.dtos.requests.UserDto;
 import com.interswitch.Unsolorockets.dtos.responses.LoginResponse;
 import com.interswitch.Unsolorockets.dtos.responses.SignUpResponse;
@@ -36,5 +37,10 @@ public class UserController {
         String token = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
         LoginResponse response = new LoginResponse(token);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<String> verifyToken(@RequestBody OTPRequest otpRequest){
+        return new ResponseEntity<>(userService.verifyOTP(otpRequest), HttpStatus.OK);
     }
 }
