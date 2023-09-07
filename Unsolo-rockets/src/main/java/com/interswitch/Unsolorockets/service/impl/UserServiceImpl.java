@@ -21,6 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 @Service
 @RequiredArgsConstructor
@@ -38,10 +40,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public SignUpResponse createUser(UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException, IOException {
         checkIfUserExist(userDto.getEmail());
-        confirmPasswords(userDto.getPassword(), userDto.getPassword2());
 
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+        String date = userDto.getDay()+ "-"+ userDto.getMonth()+ "-"+ userDto.getYear();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate dateOfBirth = LocalDate.parse(date, formatter);
         User createdUser = createUserFromDto(userDto, encodedPassword);
+        createdUser.setDateOfBirth(dateOfBirth);
 
         String token = JwtTokenUtils.generateEmailVerificationToken(createdUser.getEmail());
         createdUser.setTokenForEmail(token);
@@ -81,11 +86,9 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
-                .dateOfBirth(userDto.getDateOfBirth())
                 .email(userDto.getEmail())
                 .gender(Gender.valueOf(userDto.getGender().toUpperCase()))
                 .password(encodedPassword)
-                .phoneNumber(userDto.getPhoneNumber())
                 .build();
 
         assignRole(userDto, user);
