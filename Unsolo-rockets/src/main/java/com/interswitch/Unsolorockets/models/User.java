@@ -41,4 +41,8 @@ public class User {
 
     @Column
     private Role role;
+
+    private String validOTP;
+
+    private String tokenForEmail;
 }

@@ -34,7 +34,6 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
         User user = createUserFromDto(userDto, encodedPassword);
 
-        userRepository.save(user);
 
         return SignUpResponse.builder()
                 .firstName(user.getFirstName())
