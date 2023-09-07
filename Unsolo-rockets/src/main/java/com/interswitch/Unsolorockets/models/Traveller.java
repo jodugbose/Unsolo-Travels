@@ -15,6 +15,6 @@ public class Traveller extends User {
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    private Long id;
     private LocalDate dateJoined;
-    private boolean isVerified;
+
 
 }

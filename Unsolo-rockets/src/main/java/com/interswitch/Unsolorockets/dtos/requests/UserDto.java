@@ -12,10 +12,10 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String password;
-    private String password2;
-    private String phoneNumber;
+    private String day;
+    private String month;
+    private String year;
     private String email;
     private String gender;
-    private LocalDate dateOfBirth;
     private String role;
 }
