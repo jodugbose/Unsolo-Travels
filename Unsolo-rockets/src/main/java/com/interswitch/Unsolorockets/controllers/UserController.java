@@ -4,11 +4,13 @@ package com.interswitch.Unsolorockets.controllers;
 import com.interswitch.Unsolorockets.dtos.requests.LoginDto;
 import com.interswitch.Unsolorockets.dtos.requests.OTPRequest;
 import com.interswitch.Unsolorockets.dtos.requests.UserDto;
+import com.interswitch.Unsolorockets.dtos.requests.UserUpdateRequest;
 import com.interswitch.Unsolorockets.dtos.responses.LoginResponse;
-import com.interswitch.Unsolorockets.dtos.responses.SignUpResponse;
+import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
 import com.interswitch.Unsolorockets.exceptions.InvalidCredentialsException;
 import com.interswitch.Unsolorockets.exceptions.PasswordMismatchException;
 import com.interswitch.Unsolorockets.exceptions.UserAlreadyExistException;
+import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,8 +26,8 @@ public class UserController {
 
     private final UserService userService;
     @PostMapping("/register")
-    public ResponseEntity<SignUpResponse> signUp(@RequestBody UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException, IOException {
-        SignUpResponse response = userService.createUser(userDto);
+    public ResponseEntity<UserProfileResponse> signUp(@RequestBody UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException, IOException {
+        UserProfileResponse response = userService.createUser(userDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -39,5 +41,11 @@ public class UserController {
     @GetMapping("/verify-otp")
     public ResponseEntity<String> verifyToken(@RequestBody OTPRequest otpRequest){
         return new ResponseEntity<>(userService.verifyOTP(otpRequest), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/update")
+    public ResponseEntity<UserProfileResponse> updateUser(@PathVariable long id, @RequestBody UserUpdateRequest userUpdateRequest) throws UserNotFoundException, UserNotFoundException {
+        UserProfileResponse response = userService.updateUserDetails(id, userUpdateRequest);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
