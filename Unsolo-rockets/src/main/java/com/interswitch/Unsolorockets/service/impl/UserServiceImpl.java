@@ -2,10 +2,12 @@ package com.interswitch.Unsolorockets.service.impl;
 
 import com.interswitch.Unsolorockets.dtos.requests.OTPRequest;
 import com.interswitch.Unsolorockets.dtos.requests.UserDto;
-import com.interswitch.Unsolorockets.dtos.responses.SignUpResponse;
+import com.interswitch.Unsolorockets.dtos.requests.UserUpdateRequest;
+import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
 import com.interswitch.Unsolorockets.exceptions.InvalidCredentialsException;
 import com.interswitch.Unsolorockets.exceptions.PasswordMismatchException;
 import com.interswitch.Unsolorockets.exceptions.UserAlreadyExistException;
+import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.models.User;
 import com.interswitch.Unsolorockets.models.enums.Gender;
 import com.interswitch.Unsolorockets.models.enums.Role;
@@ -38,7 +40,7 @@ public class UserServiceImpl implements UserService {
     private final AppUtils appUtils;
 
     @Override
-    public SignUpResponse createUser(UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException, IOException {
+    public UserProfileResponse createUser(UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException, IOException {
         checkIfUserExist(userDto.getEmail());
 
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
@@ -73,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.save(createdUser);
 
-        return SignUpResponse.builder()
+        return UserProfileResponse.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
@@ -151,4 +153,38 @@ public class UserServiceImpl implements UserService {
             user.setRole(Role.ADMIN);
         }
     }
+
+    @Override
+    public UserProfileResponse updateUserDetails(long id , UserUpdateRequest userUpdateRequest) throws UserNotFoundException {
+        User user = userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+
+        if (userUpdateRequest.getFirstName() != null) {
+            user.setFirstName(userUpdateRequest.getFirstName());
+        }
+
+        if (userUpdateRequest.getLastName() != null) {
+            user.setLastName(userUpdateRequest.getLastName());
+        }
+
+        if (userUpdateRequest.getEmail() != null) {
+            user.setEmail(userUpdateRequest.getEmail());
+        }
+
+        if (userUpdateRequest.getGender() != null) {
+            user.setGender(Gender.valueOf(userUpdateRequest.getGender().toUpperCase()));
+        }
+
+        userRepository.save(user);
+
+        UserProfileResponse response = UserProfileResponse.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .gender(user.getGender().toString())
+                .build();
+
+        return response;
+    }
+
 }
