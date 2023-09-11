@@ -42,11 +42,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserProfileResponse createUser(UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException, IOException {
         checkIfUserExist(userDto.getEmail());
-
+        LocalDate dateOfBirth = null;
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
-        String date = userDto.getDay()+ "-"+ userDto.getMonth()+ "-"+ userDto.getYear();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate dateOfBirth = LocalDate.parse(date, formatter);
+        if(userDto.getDay() != null && userDto.getMonth() != null && userDto.getYear() != null) {
+
+            String date = userDto.getDay() + "-" + userDto.getMonth() + "-" + userDto.getYear();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            dateOfBirth = LocalDate.parse(date, formatter);
+        }
         User createdUser = createUserFromDto(userDto, encodedPassword);
         createdUser.setDateOfBirth(dateOfBirth);
 
@@ -67,8 +70,9 @@ public class UserServiceImpl implements UserService {
                         "<body>" +
                         "<h4>Hi " + createdUser.getFirstName() + " " + createdUser.getLastName() +",</h4> \n" +
                         "<p>Welcome to Unsolo.\n" +
-                        "To activate your Unsolo Account, verify your email address by clicking " +
-                        "<a href="+url+">verify</a></p>" +
+                        "To activate your Unsolo Account, enter your OTP" +
+                        "Your otp is "+otp+"\n"+
+                        "<a href="+url+">verify here</a></p>" +
                         "</body> " +
                         "</html>";
         emailService.sendMail(email, subject, body, "text/html");
