@@ -10,16 +10,10 @@
         <module name="Unsolo-rockets" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="Unsolo-rockets (1)" target="17" />
-      <module name="Unsolo-rockets (2)" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Unsolo-rockets" options="" />
-      <module name="Unsolo-rockets (1)" options="-parameters" />
-      <module name="Unsolo-rockets (2)" options="-parameters" />
     </option>
   </component>
 </project>
