@@ -2,7 +2,8 @@ package com.interswitch.Unsolorockets.security;
 
 import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.models.User;
-import com.interswitch.Unsolorockets.respository.UserRepository;
+import com.interswitch.Unsolorockets.respository.AdminRepository;
+import com.interswitch.Unsolorockets.respository.TravellerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,21 +13,30 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
 @JsonComponent
 public class CustomUserDetailService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final TravellerRepository travellerRepository;
+    private final AdminRepository adminRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = null;
+        User user;
         try {
-            user = userRepository.findByEmail(email)
-                    .orElseThrow(() ->
-                            new UserNotFoundException());
+
+            Optional <User> userOptional = adminRepository.findByEmail(email);
+            if(userOptional.isEmpty()){
+                userOptional = travellerRepository.findByEmail(email);
+            }
+            if(userOptional.isEmpty()){
+                throw new UserNotFoundException();
+            }
+            user = userOptional.get();
+
         } catch (UserNotFoundException e) {
             throw new RuntimeException(e);
         }
