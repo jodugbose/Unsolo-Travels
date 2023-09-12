@@ -28,7 +28,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+
     private String phoneNumber;
 
     @Column(nullable = false)
@@ -36,9 +36,13 @@ public class User {
     @Column
     private Gender gender;
 
+    private boolean isVerified;
     @Column
     private LocalDate dateOfBirth;
 
     @Column
     private Role role;
+    private String validOTP;
+
+    private String tokenForEmail;
 }
