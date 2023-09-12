@@ -4,14 +4,14 @@ import com.interswitch.Unsolorockets.dtos.requests.OTPRequest;
 import com.interswitch.Unsolorockets.dtos.requests.UserDto;
 import com.interswitch.Unsolorockets.dtos.requests.UserUpdateRequest;
 import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
-import com.interswitch.Unsolorockets.exceptions.InvalidCredentialsException;
-import com.interswitch.Unsolorockets.exceptions.PasswordMismatchException;
-import com.interswitch.Unsolorockets.exceptions.UserAlreadyExistException;
-import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
+import com.interswitch.Unsolorockets.exceptions.*;
+import com.interswitch.Unsolorockets.models.Admin;
+import com.interswitch.Unsolorockets.models.Traveller;
 import com.interswitch.Unsolorockets.models.User;
 import com.interswitch.Unsolorockets.models.enums.Gender;
 import com.interswitch.Unsolorockets.models.enums.Role;
-import com.interswitch.Unsolorockets.respository.UserRepository;
+import com.interswitch.Unsolorockets.respository.AdminRepository;
+import com.interswitch.Unsolorockets.respository.TravellerRepository;
 import com.interswitch.Unsolorockets.security.IPasswordEncoder;
 import com.interswitch.Unsolorockets.service.EmailService;
 import com.interswitch.Unsolorockets.service.UserService;
@@ -19,6 +19,9 @@ import com.interswitch.Unsolorockets.utils.AppUtils;
 import com.interswitch.Unsolorockets.utils.JwtTokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +31,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private JwtTokenUtils jwtTokenUtils;
+    private final TravellerRepository travellerRepository;
+    private final AdminRepository adminRepository;
 
     private final IPasswordEncoder passwordEncoder;
 
@@ -40,9 +44,16 @@ public class UserServiceImpl implements UserService {
     private final AppUtils appUtils;
 
     @Override
-    public UserProfileResponse createUser(UserDto userDto) throws UserAlreadyExistException, PasswordMismatchException, IOException {
+    public UserProfileResponse createUser(UserDto userDto) throws UserException, IOException {
+        boolean isValidEmail = appUtils.validEmail(userDto.getEmail());
+        if(!isValidEmail){
+            throw new InvalidEmailException("Email is invalid");
+        }
         checkIfUserExist(userDto.getEmail());
         LocalDate dateOfBirth = null;
+        if(userDto.getPassword() == null || userDto.getPassword().equals("")){
+            throw new PasswordMismatchException("Password can not empty");
+        }
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
         if(userDto.getDay() != null && userDto.getMonth() != null && userDto.getYear() != null) {
 
@@ -50,6 +61,7 @@ public class UserServiceImpl implements UserService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             dateOfBirth = LocalDate.parse(date, formatter);
         }
+
         User createdUser = createUserFromDto(userDto, encodedPassword);
         createdUser.setDateOfBirth(dateOfBirth);
 
@@ -75,36 +87,50 @@ public class UserServiceImpl implements UserService {
                         "<a href="+url+">verify here</a></p>" +
                         "</body> " +
                         "</html>";
-        emailService.sendMail(email, subject, body, "text/html");
+//        emailService.sendMail(email, subject, body, "text/html");
 
-        User user = userRepository.save(createdUser);
+        if(createdUser instanceof Traveller){
+            travellerRepository.save((Traveller) createdUser);
+        }
+
+        if(createdUser instanceof Admin){
+            adminRepository.save((Admin) createdUser);
+        }
+
 
         return UserProfileResponse.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
-                .gender(user.getGender().toString())
+                .firstName(createdUser.getFirstName())
+                .lastName(createdUser.getLastName())
+                .email(createdUser.getEmail())
+                .phoneNumber(createdUser.getPhoneNumber())
+                .gender(String.valueOf(createdUser.getGender()))
                 .build();
     }
 
     private User createUserFromDto(UserDto userDto, String encodedPassword) {
-        User user = User.builder()
-                .firstName(userDto.getFirstName())
-                .lastName(userDto.getLastName())
-                .email(userDto.getEmail())
-                .gender(Gender.valueOf(userDto.getGender().toUpperCase()))
-                .password(encodedPassword)
-                .build();
+        User user;
 
+        if(userDto.getRole().equalsIgnoreCase(String.valueOf(Role.ADMIN)) ) {
+            user = new Admin();
+        }
+        else{
+            user = new Traveller();
+        }
+
+        BeanUtils.copyProperties(userDto, user);
+        user.setPassword(encodedPassword);
+        user.setGender(Gender.valueOf(userDto.getGender().toUpperCase()));
         assignRole(userDto, user);
-
         return user;
     }
 
     public String authenticateUser(String email, String password) throws InvalidCredentialsException {
-        Optional<User> userOptional = userRepository.findByEmail(email);
+        Optional<User> userOptional;
 
+        userOptional = adminRepository.findByEmail(email);
+        if(userOptional.isEmpty()){
+            userOptional = travellerRepository.findByEmail(email);
+        }
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (confirmUserPasswords(password, user.getPassword())) {
@@ -118,15 +144,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String verifyOTP(OTPRequest otpRequest) {
-        User user = userRepository.findByEmail(otpRequest.getEmailForOTP()).get();
+    public String verifyOTP(OTPRequest otpRequest) throws UserNotFoundException {
+        Optional<User> userOptional;
+
+        userOptional = adminRepository.findByEmail(otpRequest.getEmailForOTP());
+        if(userOptional.isEmpty()){
+            userOptional = travellerRepository.findByEmail(otpRequest.getEmailForOTP());
+        }
+        if(userOptional.isEmpty()){
+            throw new UserNotFoundException();
+        }
+        User user = userOptional.get();
         if (user.isVerified()){
             return "This account is already verified";
         }
 
         if (passwordEncoder.matches(otpRequest.getOtp(), user.getValidOTP())){
             user.setVerified(true);
-            userRepository.save(user);
+            if(user.getRole().equals(Role.ADMIN)){
+            adminRepository.save((Admin) user);
+            }
+            else {
+                travellerRepository.save((Traveller) user);
+            }
             return "Verification successful";
         }else {
             return "Check the OTP and try again";
@@ -138,8 +178,14 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkIfUserExist(String email) throws UserAlreadyExistException {
-        Optional<User> existingUser = userRepository.findByEmail(email);
-        if(existingUser.isPresent()){
+        Optional<User> userOptional;
+
+        userOptional = adminRepository.findByEmail(email);
+        if(userOptional.isEmpty()){
+            userOptional = travellerRepository.findByEmail(email);
+        }
+
+        if(userOptional.isPresent()){
             throw new UserAlreadyExistException("User with this email already exists");
         }
     }
@@ -150,18 +196,26 @@ public class UserServiceImpl implements UserService {
         }
     }
     private static void assignRole(UserDto userDto, User user) {
-        if(userDto.getRole() == null){
+        if(userDto.getRole() == null || userDto.getRole().equalsIgnoreCase(String.valueOf(Role.TRAVELLER)) ){
             user.setRole(Role.TRAVELLER);
         }
-        else {
+        if(userDto.getRole().equalsIgnoreCase(String.valueOf(Role.ADMIN))){
             user.setRole(Role.ADMIN);
         }
     }
 
     @Override
     public UserProfileResponse updateUserDetails(long id , UserUpdateRequest userUpdateRequest) throws UserNotFoundException {
-        User user = userRepository.findById(id)
-                .orElseThrow(UserNotFoundException::new);
+        Optional<User> userOptional;
+
+        userOptional = adminRepository.findByEmail(userUpdateRequest.getEmail());
+        if(userOptional.isEmpty()){
+            userOptional = travellerRepository.findByEmail(userUpdateRequest.getEmail());
+        }
+        if(userOptional.isEmpty()){
+            throw new UserNotFoundException();
+        }
+        User user = userOptional.get();
 
         if (userUpdateRequest.getFirstName() != null) {
             user.setFirstName(userUpdateRequest.getFirstName());
@@ -179,16 +233,20 @@ public class UserServiceImpl implements UserService {
             user.setGender(Gender.valueOf(userUpdateRequest.getGender().toUpperCase()));
         }
 
-        userRepository.save(user);
+        if(user.getRole().equals(Role.ADMIN)){
+            adminRepository.save((Admin) user);
+        }
+        else {
+            travellerRepository.save((Traveller) user);
+        }
 
-        UserProfileResponse response = UserProfileResponse.builder()
+        return UserProfileResponse.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .gender(user.getGender().toString())
                 .build();
-
-        return response;
     }
+
 
 }
