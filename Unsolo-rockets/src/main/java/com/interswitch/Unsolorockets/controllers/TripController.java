@@ -1,6 +1,7 @@
 package com.interswitch.Unsolorockets.controllers;
 
 import com.interswitch.Unsolorockets.dtos.requests.CreateTripRequest;
+import com.interswitch.Unsolorockets.exceptions.UserException;
 import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.service.TripService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class TripController {
     private final TripService tripService;
 
     @PostMapping("/")
-    public ResponseEntity<?> create(@RequestBody CreateTripRequest request) throws UserNotFoundException {
+    public ResponseEntity<?> create(@RequestBody CreateTripRequest request) throws UserException {
         var response = tripService.createTrip(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

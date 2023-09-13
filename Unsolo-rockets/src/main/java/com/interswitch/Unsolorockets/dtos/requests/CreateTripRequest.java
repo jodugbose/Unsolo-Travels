@@ -8,10 +8,14 @@ import java.time.LocalDate;
 @Getter
 public class CreateTripRequest {
 
-    private long travellerId;
+    private String travellerId;
     private String country;
-    private LocalDate departureDate;
-    private LocalDate arrivalDate;
+    private String departureDay;
+    private String departureMonth;
+    private String departureYear;
+    private String arrivalDay;
+    private String arrivalMonth;
+    private String arrivalYear;
     private String aboutTheTrip;
     private String journeyType;
     private boolean splitCost;

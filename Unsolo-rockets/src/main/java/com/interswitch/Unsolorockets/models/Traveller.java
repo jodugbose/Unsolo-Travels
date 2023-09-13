@@ -15,7 +15,7 @@ public class Traveller extends User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private ArrayList<Trip> trips = new ArrayList<>();
+//    private ArrayList<Trip> trips = new ArrayList<>();
 
 
 }

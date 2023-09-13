@@ -1,5 +1,5 @@
 package com.interswitch.Unsolorockets.models.enums;
 
 public enum JourneyType {
-    BACKPACKING
+    BACKPACKING,MOUNTAINEERING, SAFARI, PILGRIMAGE, FAMILY_VACATION
 }

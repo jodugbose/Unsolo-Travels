@@ -50,17 +50,13 @@ public class UserServiceImpl implements UserService {
             throw new InvalidEmailException("Email is invalid");
         }
         checkIfUserExist(userDto.getEmail());
-        LocalDate dateOfBirth = null;
+
         if(userDto.getPassword() == null || userDto.getPassword().equals("")){
             throw new PasswordMismatchException("Password can not empty");
         }
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
-        if(userDto.getDay() != null && userDto.getMonth() != null && userDto.getYear() != null) {
 
-            String date = userDto.getDay() + "-" + userDto.getMonth() + "-" + userDto.getYear();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            dateOfBirth = LocalDate.parse(date, formatter);
-        }
+        LocalDate dateOfBirth = appUtils.createLocalDate(userDto.getDay(), userDto.getMonth(), userDto.getYear());
 
         User createdUser = createUserFromDto(userDto, encodedPassword);
         createdUser.setDateOfBirth(dateOfBirth);
@@ -107,10 +103,15 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+
+
     private User createUserFromDto(UserDto userDto, String encodedPassword) {
         User user;
 
-        if(userDto.getRole().equalsIgnoreCase(String.valueOf(Role.ADMIN)) ) {
+        if(userDto.getRole() == null){
+            user = new Traveller();
+        }
+        else if(userDto.getRole().equalsIgnoreCase(String.valueOf(Role.ADMIN)) ) {
             user = new Admin();
         }
         else{
@@ -199,7 +200,7 @@ public class UserServiceImpl implements UserService {
         if(userDto.getRole() == null || userDto.getRole().equalsIgnoreCase(String.valueOf(Role.TRAVELLER)) ){
             user.setRole(Role.TRAVELLER);
         }
-        if(userDto.getRole().equalsIgnoreCase(String.valueOf(Role.ADMIN))){
+        else if(userDto.getRole().equalsIgnoreCase(String.valueOf(Role.ADMIN))){
             user.setRole(Role.ADMIN);
         }
     }
