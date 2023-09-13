@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 @Setter
 @Getter
@@ -14,6 +15,7 @@ public class Traveller extends User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+//    private ArrayList<Trip> trips = new ArrayList<>();
 
 
 }
