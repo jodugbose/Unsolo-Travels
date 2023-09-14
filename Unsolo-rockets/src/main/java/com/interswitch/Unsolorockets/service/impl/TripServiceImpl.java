@@ -100,6 +100,8 @@ public class TripServiceImpl implements TripService {
             trip.setJourneyType(JourneyType.valueOf(request.getJourneyType().toUpperCase()));
         }
 
+        tripRepository.save(trip);
+
         TripResponse tripResponse = new TripResponse();
         BeanUtils.copyProperties(request, tripResponse);
         tripResponse.setTravellerName(traveller.getFirstName());
