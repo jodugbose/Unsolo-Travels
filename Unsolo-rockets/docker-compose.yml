@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+ API:
+  image: Unsolo-Rocket
+  ports:
+   - "8080:8080"
+  depends_on:
+   - db
+  environment:
+   - SPRING_DATASOURCE_URL= jdbc:sqlserver://ISW-211126-236\\SQLEXPRESS02;encrypt=false;integratedSecurity=true;databaseName=Training
+   - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.SQLServerDialect
+   - SPRING_JPA_HIBERNATE_DDL_AUTO=create
+
+ db:
+   image: mcr.microsoft.com/mssql/server
+   ports:
+    - "1433:1433"
+
+   environment:
+    - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.SQLServerDialect
+    - DATABASE_NAME=Training
+
+
+
+
+
