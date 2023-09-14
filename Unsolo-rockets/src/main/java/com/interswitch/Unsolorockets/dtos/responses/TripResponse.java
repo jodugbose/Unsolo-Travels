@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 //@RequiredArgsConstructor
-public class CreateTripResponse {
+public class TripResponse {
 
     private String travellerName;
     private String country;

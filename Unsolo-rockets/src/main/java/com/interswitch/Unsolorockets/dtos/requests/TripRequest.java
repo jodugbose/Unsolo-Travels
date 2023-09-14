@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class CreateTripRequest {
+public class TripRequest {
 
     private String travellerId;
     private String country;
@@ -16,4 +16,5 @@ public class CreateTripRequest {
     private boolean splitCost;
     private double budget;
     private boolean firstTime;
+    private Long tripId;
 }
