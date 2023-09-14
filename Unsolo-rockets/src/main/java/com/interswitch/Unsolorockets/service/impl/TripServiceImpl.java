@@ -6,7 +6,6 @@ import com.interswitch.Unsolorockets.exceptions.UserException;
 import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.models.Traveller;
 import com.interswitch.Unsolorockets.models.Trip;
-import com.interswitch.Unsolorockets.models.enums.Gender;
 import com.interswitch.Unsolorockets.models.enums.JourneyType;
 import com.interswitch.Unsolorockets.respository.TravellerRepository;
 import com.interswitch.Unsolorockets.respository.TripRepository;
@@ -30,14 +29,14 @@ public class TripServiceImpl implements TripService {
     @Override
     public CreateTripResponse createTrip(CreateTripRequest request) throws UserException {
         Optional<Traveller> optionalTraveller = travellerRepository.findById(Long.valueOf(request.getTravellerId()));
-        if(optionalTraveller.isEmpty()){
+        if (optionalTraveller.isEmpty()) {
             throw new UserNotFoundException();
         }
         Traveller traveller = optionalTraveller.get();
         Trip trip = new Trip();
         BeanUtils.copyProperties(request, trip);
-        LocalDate departureDate = appUtils.createLocalDate(request.getDepartureDay(), request.getDepartureMonth(), request.getDepartureYear());
-        LocalDate arrivalDate = appUtils.createLocalDate(request.getArrivalDay(), request.getArrivalMonth(), request.getArrivalYear());
+        LocalDate departureDate = appUtils.createLocalDate(request.getDepartureDate());
+        LocalDate arrivalDate = appUtils.createLocalDate(request.getArrivalDate());
         trip.setDepartureDate(departureDate);
         trip.setArrivalDate(arrivalDate);
         trip.setTravellerId(traveller.getId());

@@ -6,15 +6,16 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Random;
 
 @Service
 public class AppUtils {
 
-    public Long generateOTP(){
+    public Long generateOTP() {
         Random rnd = new Random();
         Long number = (long) rnd.nextInt(999999);
-        return  number;
+        return number;
     }
 
     public boolean validEmail(String email) {
@@ -22,15 +23,17 @@ public class AppUtils {
         return email.matches(regex);
     }
 
-    public LocalDate createLocalDate(String day, String month, String year) throws UserException {
-        if(day != null && month != null && year != null) {
-            String date = day + "-" + month + "-" + year;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            return LocalDate.parse(date, formatter);
+    public LocalDate createLocalDate(String dateStr) throws UserException {
+        if (dateStr != null) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                return LocalDate.parse(dateStr, formatter);
+            } catch (DateTimeParseException e) {
+                throw new UserException("Invalid date format. Please use dd/MM/yyyy format.", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            throw new UserException("Date cannot be null", HttpStatus.BAD_REQUEST);
         }
-        else {
-            throw new UserException("date can not be null", HttpStatus.BAD_REQUEST);
-        }
-
     }
+
 }
