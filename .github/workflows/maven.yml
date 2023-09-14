@@ -31,7 +31,7 @@ jobs:
         image: unsolo-travels
         tags: latest
         registry: docker.io
-        dockerfile: ./Unsolo-rockets
+        dockerfile: ./Dockerfile
         username: favouritedan
         password: Oluchukwu74
 
