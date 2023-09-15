@@ -1,6 +1,6 @@
 package com.interswitch.Unsolorockets.models;
 
-import jakarta.persistence.*;
+
 import lombok.*;
 
 import java.time.LocalDate;
