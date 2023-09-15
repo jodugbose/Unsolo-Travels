@@ -47,4 +47,6 @@ public class TripServiceImpl implements TripService {
         tripResponse.setTravellerName(traveller.getFirstName());
         return tripResponse;
     }
+
+
 }
