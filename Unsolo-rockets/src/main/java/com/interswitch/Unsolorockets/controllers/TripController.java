@@ -1,5 +1,6 @@
 package com.interswitch.Unsolorockets.controllers;
 
+import com.interswitch.Unsolorockets.dtos.requests.DeleteRequest;
 import com.interswitch.Unsolorockets.dtos.requests.TripRequest;
 import com.interswitch.Unsolorockets.exceptions.TripNotFoundException;
 import com.interswitch.Unsolorockets.exceptions.UserException;
@@ -29,8 +30,8 @@ public class TripController {
     }
 
     @DeleteMapping("/")
-    public ResponseEntity <?> deleteTrip(@PathVariable Long tripId, @PathVariable Long travellerId) throws UserNotFoundException, TripNotFoundException {
-        var response = tripService.deleteTrip(tripId, travellerId);
+    public ResponseEntity <?> deleteTrip(@RequestBody DeleteRequest request) throws UserNotFoundException, TripNotFoundException {
+        var response = tripService.deleteTrip(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
