@@ -29,7 +29,7 @@ public class TripController {
     }
 
     @DeleteMapping("/")
-    public ResponseEntity <?> deleteTrip(Long tripId, Long travellerId) throws UserNotFoundException, TripNotFoundException {
+    public ResponseEntity <?> deleteTrip(@PathVariable Long tripId, @PathVariable Long travellerId) throws UserNotFoundException, TripNotFoundException {
         var response = tripService.deleteTrip(tripId, travellerId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

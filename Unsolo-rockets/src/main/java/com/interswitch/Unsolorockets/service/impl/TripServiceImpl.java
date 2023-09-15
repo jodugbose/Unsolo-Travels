@@ -115,13 +115,11 @@ public class TripServiceImpl implements TripService {
         Optional <Trip> tripOptional = Optional.of(tripRepository.findById(tripId)
                 .orElseThrow(() -> new TripNotFoundException("Trip not found")));
         Trip trip = tripOptional.get();
-        if(trip.getTravellerId() == travellerId){
-            tripRepository.delete(trip);
-        }
-        else {
+        if(trip.getTravellerId() != travellerId){
             throw new UserNotFoundException();
         }
-        return "Success";
+        tripRepository.delete(trip);
+        return "Delete success";
     }
 
 
