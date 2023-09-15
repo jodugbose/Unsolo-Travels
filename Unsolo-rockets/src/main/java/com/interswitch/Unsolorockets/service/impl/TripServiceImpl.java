@@ -110,5 +110,19 @@ public class TripServiceImpl implements TripService {
         return tripResponse;
     }
 
+    @Override
+    public String deleteTrip(Long tripId, Long travellerId) throws TripNotFoundException, UserNotFoundException {
+        Optional <Trip> tripOptional = Optional.of(tripRepository.findById(tripId)
+                .orElseThrow(() -> new TripNotFoundException("Trip not found")));
+        Trip trip = tripOptional.get();
+        if(trip.getTravellerId() == travellerId){
+            tripRepository.delete(trip);
+        }
+        else {
+            throw new UserNotFoundException();
+        }
+        return "Success";
+    }
+
 
 }

@@ -50,9 +50,10 @@ public class EmailMailServiceImplTest {
         String receiverEmail = "";//type an email address
         String subject = "Test Subject";
         String emailBody = "Test Email Body";
+        String contentType = "context/html";
 
-        emailService.sendMail(receiverEmail, subject, emailBody);
+        emailService.sendMail(receiverEmail, subject, emailBody, contentType);
 
-        assertDoesNotThrow(() -> emailService.sendMail(receiverEmail, subject, emailBody));
+        assertDoesNotThrow(() -> emailService.sendMail(receiverEmail, subject, emailBody, contentType));
     }
 }
