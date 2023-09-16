@@ -11,9 +11,9 @@ import java.util.ArrayList;
 @Entity
 @Table(name = "travellers")
 public class Traveller extends User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
 
 //    private ArrayList<Trip> trips = new ArrayList<>();
 
