@@ -1,5 +1,6 @@
 package com.interswitch.Unsolorockets.service.impl;
 
+import com.interswitch.Unsolorockets.dtos.requests.DeleteRequest;
 import com.interswitch.Unsolorockets.dtos.requests.TripRequest;
 import com.interswitch.Unsolorockets.dtos.responses.TripResponse;
 import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
@@ -108,6 +109,18 @@ public class TripServiceImpl implements TripService {
         tripResponse.setArrivalDate(arrivalDate);
         tripResponse.setDepartureDate(departureDate);
         return tripResponse;
+    }
+
+    @Override
+    public String deleteTrip(DeleteRequest request) throws TripNotFoundException, UserNotFoundException {
+        Optional <Trip> tripOptional = Optional.of(tripRepository.findById(request.getTripId())
+                .orElseThrow(() -> new TripNotFoundException("Trip not found")));
+        Trip trip = tripOptional.get();
+        if(trip.getTravellerId() != request.getTravellerId()){
+            throw new UserNotFoundException();
+        }
+        tripRepository.delete(trip);
+        return "Delete success";
     }
 
 
