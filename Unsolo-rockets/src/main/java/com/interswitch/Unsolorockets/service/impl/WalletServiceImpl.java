@@ -5,6 +5,7 @@ import com.interswitch.Unsolorockets.dtos.WalletDto;
 import com.interswitch.Unsolorockets.exceptions.CommonsException;
 import com.interswitch.Unsolorockets.models.Wallet;
 import com.interswitch.Unsolorockets.respository.WalletRepository;
+import com.interswitch.Unsolorockets.service.WalletService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import static com.interswitch.Unsolorockets.utils.AppUtils.generateWalletId;
 
 @RequiredArgsConstructor
 @Service
-public class WalletServiceImpl {
+public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
 
