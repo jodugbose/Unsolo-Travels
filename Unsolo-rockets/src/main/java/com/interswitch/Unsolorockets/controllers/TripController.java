@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/trip")
@@ -33,6 +35,19 @@ public class TripController {
     public ResponseEntity <?> deleteTrip(@RequestBody DeleteRequest request) throws UserNotFoundException, TripNotFoundException {
         var response = tripService.deleteTrip(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/match")
+    public ResponseEntity<List<String>> findMatchingTravellers(
+            @RequestParam("country") String country,
+            @RequestParam("aboutTheTrip") String aboutTheTrip,
+            @RequestParam("journeyType") String journeyType,
+            @RequestParam("splitCost") boolean splitCost,
+            @RequestParam("budget") double budget,
+            @RequestParam("firstTime") boolean firstTime) {
+        List<String> matchingTravellers = tripService.findMatchingTravellers(
+                country, aboutTheTrip, journeyType, splitCost, budget, firstTime);
+        return new ResponseEntity<>(matchingTravellers, HttpStatus.OK);
     }
 
 }
