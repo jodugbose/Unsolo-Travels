@@ -34,11 +34,12 @@ jobs:
       with:
         username: favouritedan
         password: Oluchukwu74
-    
+      
     - name: Build and push
       uses: docker/build-push-action@v3
       with:
-        context: Unsolo-rockets/Dockerfile
+        dockerfile: Unsolo-rockets/Dockerfile
+        context: .
         push: true
         tags: favouritedan/unsolo-travels:latest
 
