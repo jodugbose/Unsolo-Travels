@@ -4,7 +4,7 @@ services:
   container_name: unsolo-rockets
   image: favouritedan/unsolo-rockets
   ports:
-   - "8080:8080"
+   - "8980:8080"
   depends_on:
    - unsolo_rockets_db
   environment:
@@ -14,7 +14,7 @@ services:
   container_name: unsolo_rockets_db
   image: postgres:13.3-alpine
   ports:
-   - "5432:5432"
+   - "5433:5432"
   environment:
    - SPRING_DATASOURCE_USERNAME=postgres
    - SPRING_DATASOURCE_PASSWORD=password
