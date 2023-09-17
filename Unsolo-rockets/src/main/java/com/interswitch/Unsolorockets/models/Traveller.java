@@ -4,17 +4,18 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 @Setter
 @Getter
-@NoArgsConstructor
-//@Entity
-//@Table(name = "travellers")
+@Entity
+@Table(name = "travellers")
 public class Traveller extends User {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-    private LocalDate dateJoined;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+//    private ArrayList<Trip> trips = new ArrayList<>();
 
 
 }
