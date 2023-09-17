@@ -19,7 +19,7 @@ services:
 
   environment:
    - SPRING_DATASOURCE_USERNAME=postgres
-   - SPRING_DATASOURCE_PASSWORD=password
+   - SPRING_DATASOURCE_PASSWORD=qwertyuiop
    - POSTGRES_DB=unsolo_rockets
    - POSTGRES_HOST_AUTH_METHOD=trust
 
