@@ -27,9 +27,10 @@ public class SecurityConfiguration {
 
     private final String path = "/api/user";
     private final String tripPath = "/api/trip";
+    private final String adminPath = "api/admin";
     private final String[] AUTH_WHITELIST = {
             path +"/login/**", path + "/forgot-password", path + "/change-password",
-           path + "/register", tripPath+ "/",
+           path + "/register", tripPath+ "/", adminPath+ "/",
 
     };
 

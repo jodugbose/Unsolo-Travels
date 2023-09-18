@@ -61,4 +61,9 @@ public class GlobalExceptionHandler  {
     public ResponseEntity<?> handleTripNotFoundException(TripNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(PackageException.class)
+    public ResponseEntity<?> handlePackageException(PackageException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
