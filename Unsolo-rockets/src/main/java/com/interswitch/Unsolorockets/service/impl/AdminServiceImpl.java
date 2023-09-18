@@ -32,6 +32,8 @@ public class AdminServiceImpl implements AdminService {
         aPackage.setDestination(destination);
         aPackage.setPrice(packageDto.getPrice());
         aPackage.setTitle(packageDto.getTitle());
+        aPackage.setPackageDetails(packageDto.getPackageDetails());
+        aPackage.setPackageSummary(packageDto.getPackageSummary());
         packageRepository.save(aPackage);
         return "package created";
     }

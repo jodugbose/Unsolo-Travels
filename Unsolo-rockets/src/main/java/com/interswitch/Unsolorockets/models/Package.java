@@ -18,5 +18,7 @@ public class Package {
     @OneToOne
     private Destination destination;
     private double price;
+    private String packageDetails;
+    private String packageSummary;
 
 }

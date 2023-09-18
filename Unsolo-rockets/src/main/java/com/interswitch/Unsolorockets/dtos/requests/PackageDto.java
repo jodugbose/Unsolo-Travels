@@ -12,5 +12,8 @@ public class PackageDto {
     private String country;
     private String state;
     private String city;
+    private String packageDetails;
+    private String packageSummary;
+
 
 }
