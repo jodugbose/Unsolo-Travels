@@ -6,12 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Setter
 @Getter
+@ToString
 public class FlutterwavePaymentRequeryResponseDto {
 
     public String status;
@@ -22,6 +24,7 @@ public class FlutterwavePaymentRequeryResponseDto {
     @Getter
     @Setter
     @NoArgsConstructor
+    @ToString
     public static class Data {
         public int id;
         @JsonAlias("txRef")

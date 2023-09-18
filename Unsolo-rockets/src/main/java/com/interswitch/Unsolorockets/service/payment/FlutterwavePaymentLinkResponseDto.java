@@ -1,5 +1,7 @@
 package com.interswitch.Unsolorockets.service.payment;
 
+import com.interswitch.Unsolorockets.models.enums.PaymentStatus;
+import com.interswitch.Unsolorockets.models.enums.Processor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

@@ -22,4 +22,6 @@ public class Wallet extends Base{
     @Column(nullable = false, unique = true)
     private long userId;
 
+    private String pin;
+
 }

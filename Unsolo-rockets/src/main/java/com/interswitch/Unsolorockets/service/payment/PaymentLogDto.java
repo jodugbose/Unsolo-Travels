@@ -1,14 +1,17 @@
 package com.interswitch.Unsolorockets.service.payment;
 
-import com.interswitch.Unsolorockets.respository.Transaction;
+import com.interswitch.Unsolorockets.models.enums.PaymentCurrency;
+import com.interswitch.Unsolorockets.models.enums.PaymentStatus;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 
 @Setter
 @Getter
+@ToString
 public class PaymentLogDto {
 
     private  String reference;

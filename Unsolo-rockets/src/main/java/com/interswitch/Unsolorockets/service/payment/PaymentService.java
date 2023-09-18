@@ -3,12 +3,14 @@ package com.interswitch.Unsolorockets.service.payment;
 import com.interswitch.Unsolorockets.exceptions.CommonsException;
 import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.models.Traveller;
-import com.interswitch.Unsolorockets.respository.Transaction;
+import com.interswitch.Unsolorockets.models.Wallet;
+import com.interswitch.Unsolorockets.models.enums.PaymentStatus;
 import com.interswitch.Unsolorockets.respository.TransactionRepository;
 import com.interswitch.Unsolorockets.respository.TravellerRepository;
 import com.interswitch.Unsolorockets.respository.WalletRepository;
 import com.interswitch.Unsolorockets.utils.IAppendableReferenceUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentService {
 
     private final FlutterwaveService flutterwaveService;
@@ -66,5 +69,45 @@ public class PaymentService {
         transaction = transactionRepository.save(transaction);
 
         return PaymentLogDto.fromPaymentLog(transaction);
+    }
+
+
+    public PaymentLogDto getPayment(String reference) throws CommonsException {
+        return getPayment(IAppendableReferenceUtils.getIdFrom(reference));
+    }
+
+    public PaymentLogDto getPayment(long id) throws CommonsException {
+
+        Transaction cardPayments = transactionRepository.findById(id).orElseThrow(() -> new CommonsException("payment does not exist", HttpStatus.NOT_FOUND));
+        //perform deep requery for pending payment
+        if (cardPayments.getStatus() == PaymentStatus.PENDING) {
+            cardPayments = requeryPayment(cardPayments);
+        }
+        return PaymentLogDto.fromPaymentLog(cardPayments);
+
+    }
+
+    private Transaction requeryPayment(Transaction payment) {
+        try {
+            FlutterwavePaymentRequeryResponseDto requeryResponseDto = flutterwaveService.getStatus(payment.getReference());
+            //when status changes from processor, update payment log
+            if (requeryResponseDto.data.status.equalsIgnoreCase("successful")) {
+                payment.setProcessorReference(payment.getReference());
+                payment.setStatus(PaymentStatus.SUCCESSFUL);
+                Wallet wallet = walletRepository.findByUserId(payment.getUserId()).orElseThrow(() -> new CommonsException("user does not have a wallet", HttpStatus.NOT_FOUND));
+                wallet.setUserId(payment.getUserId());
+                wallet.setBalance(wallet.getBalance().add(payment.getAmount()));
+                walletRepository.save(wallet);
+            } else if (requeryResponseDto.data.status.equalsIgnoreCase("failed")) {
+                payment.setStatus(PaymentStatus.FAILED);
+
+            }
+            transactionRepository.save(payment);
+
+            return payment;
+        } catch (CommonsException ex) {
+            log.error("requeryCardPayment reference:[{}] error: {}", payment.getReference(), ex.getMessage());
+            return payment;
+        }
     }
 }

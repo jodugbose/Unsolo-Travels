@@ -1,8 +1,8 @@
-package com.interswitch.Unsolorockets.respository;
+package com.interswitch.Unsolorockets.service.payment;
 
 import com.interswitch.Unsolorockets.models.Base;
-import com.interswitch.Unsolorockets.service.payment.PaymentCurrency;
-import com.interswitch.Unsolorockets.service.payment.PaymentStatus;
+import com.interswitch.Unsolorockets.models.enums.PaymentCurrency;
+import com.interswitch.Unsolorockets.models.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

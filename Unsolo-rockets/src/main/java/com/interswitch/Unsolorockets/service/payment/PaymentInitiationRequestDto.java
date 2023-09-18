@@ -1,5 +1,6 @@
 package com.interswitch.Unsolorockets.service.payment;
 
+import com.interswitch.Unsolorockets.models.enums.PaymentCurrency;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +15,6 @@ public class PaymentInitiationRequestDto {
     private BigDecimal amount;
     private PaymentCurrency currencyCode;
     @NotBlank(message = "country_code.not_blank")
-//    @ValidCountryCode
     private String countryCode;
     private String source;
     private String transactionReference;

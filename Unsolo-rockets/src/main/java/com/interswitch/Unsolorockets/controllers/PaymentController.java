@@ -1,6 +1,7 @@
 package com.interswitch.Unsolorockets.controllers;
 
 import com.interswitch.Unsolorockets.exceptions.CommonsException;
+import com.interswitch.Unsolorockets.service.payment.PaymentLogDto;
 import com.interswitch.Unsolorockets.service.payment.PaymentRequestDto;
 import com.interswitch.Unsolorockets.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -18,5 +19,12 @@ public class PaymentController {
     @PostMapping("/initiate/{userId}")
     public ResponseEntity<?> initiatePayment(@PathVariable Long userId, @RequestBody PaymentRequestDto paymentRequestDto) throws CommonsException {
         return new ResponseEntity<>(paymentService.initiatePayment(userId, paymentRequestDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/status/{reference}")
+    public ResponseEntity<?> getPaymentStatus(
+            @PathVariable String reference) throws CommonsException {
+        PaymentLogDto paymentLogDto = paymentService.getPayment(reference);
+        return new ResponseEntity<>(paymentLogDto, HttpStatus.OK);
     }
 }

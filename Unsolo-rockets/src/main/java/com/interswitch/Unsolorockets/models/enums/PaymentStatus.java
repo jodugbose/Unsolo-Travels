@@ -1,4 +1,4 @@
-package com.interswitch.Unsolorockets.service.payment;
+package com.interswitch.Unsolorockets.models.enums;
 
 public enum PaymentStatus {
 
