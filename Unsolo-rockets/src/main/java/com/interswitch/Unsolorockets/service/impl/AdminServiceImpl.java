@@ -27,13 +27,15 @@ public class AdminServiceImpl implements AdminService {
             throw new PackageException("Package with this title already exist");
         }
         Destination destination = createDestination(packageDto.getCountry(), packageDto.getState(), packageDto.getCity());
-        destinationRepository.save(destination);
+        Destination savedDestination = destinationRepository.save(destination);
         Package aPackage = new Package();
-        aPackage.setDestination(destination);
+        aPackage.setDestination(savedDestination);
         aPackage.setPrice(packageDto.getPrice());
         aPackage.setTitle(packageDto.getTitle());
         aPackage.setPackageDetails(packageDto.getPackageDetails());
         aPackage.setPackageSummary(packageDto.getPackageSummary());
+        aPackage.setDuration(packageDto.getDuration());
+        aPackage.setNumberOfParticipants(packageDto.getNumberOfParticipants());
         packageRepository.save(aPackage);
         return "package created";
     }

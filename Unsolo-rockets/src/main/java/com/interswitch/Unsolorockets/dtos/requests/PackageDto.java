@@ -14,6 +14,8 @@ public class PackageDto {
     private String city;
     private String packageDetails;
     private String packageSummary;
+    private String duration;
+    private int numberOfParticipants;
 
 
 }

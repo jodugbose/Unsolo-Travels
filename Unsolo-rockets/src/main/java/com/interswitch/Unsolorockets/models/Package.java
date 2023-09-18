@@ -20,5 +20,7 @@ public class Package {
     private double price;
     private String packageDetails;
     private String packageSummary;
+    private String duration;
+    private int numberOfParticipants;
 
 }
