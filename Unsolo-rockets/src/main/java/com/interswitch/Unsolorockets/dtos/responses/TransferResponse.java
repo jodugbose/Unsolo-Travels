@@ -1,4 +1,4 @@
-package com.interswitch.Unsolorockets.dtos;
+package com.interswitch.Unsolorockets.dtos.responses;
 
 import lombok.Builder;
 import lombok.Getter;

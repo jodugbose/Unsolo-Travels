@@ -1,6 +1,6 @@
 package com.interswitch.Unsolorockets.controllers;
 
-import com.interswitch.Unsolorockets.dtos.TransferResponse;
+import com.interswitch.Unsolorockets.dtos.responses.TransferResponse;
 import com.interswitch.Unsolorockets.dtos.requests.CreateWalletRequest;
 import com.interswitch.Unsolorockets.dtos.requests.TransferRequestDto;
 import com.interswitch.Unsolorockets.exceptions.CommonsException;

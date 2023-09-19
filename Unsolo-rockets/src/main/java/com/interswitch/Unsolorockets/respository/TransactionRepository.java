@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     Optional<Transaction> findByIdAndUserId(long id, Long userId);
 
-    @Query(value = "select * from transactions where payment_status = ?1 ", nativeQuery = true)
-    List<Transaction> findByPaymentStatus(String name);
+    @Query(value = "select * from transactions where status = ?1 ", nativeQuery = true)
+    List<Transaction> findByStatus(String name);
 }
