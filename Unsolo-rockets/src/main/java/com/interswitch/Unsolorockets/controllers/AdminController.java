@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/admin")
+@RequestMapping("/api/admin")
 public class AdminController {
     private final AdminService adminService;
 
@@ -22,7 +22,7 @@ public class AdminController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("/deactivate")
     public ResponseEntity<?> deactivateAccount(@RequestParam String email) throws UserNotFoundException, UserAlreadyExistException {
         var response = adminService.deactivateUserAccount(email);
         return new ResponseEntity<>(response, HttpStatus.OK);

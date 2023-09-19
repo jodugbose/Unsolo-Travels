@@ -35,7 +35,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/verify-otp")
+    @PostMapping("/verify-otp")
     public ResponseEntity<String> verifyToken(@RequestBody OTPRequest otpRequest) throws UserNotFoundException {
         return new ResponseEntity<>(userService.verifyOTP(otpRequest), HttpStatus.OK);
     }
