@@ -4,8 +4,7 @@ import com.interswitch.Unsolorockets.dtos.requests.OTPRequest;
 import com.interswitch.Unsolorockets.dtos.requests.UserDto;
 import com.interswitch.Unsolorockets.dtos.requests.UserUpdateRequest;
 import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
-import com.interswitch.Unsolorockets.exceptions.PasswordMismatchException;
-import com.interswitch.Unsolorockets.exceptions.UserAlreadyExistException;
+
 import com.interswitch.Unsolorockets.exceptions.UserException;
 import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 
