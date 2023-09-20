@@ -16,10 +16,15 @@ public class HotelBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String hotel;
+    @Column(nullable = false)
     private String roomType;
+    @Column(nullable = false)
     private int guestNumber;
+    @Column(nullable = false)
     private LocalDate checkInDate;
+    @Column(nullable = false)
     private LocalDate checkOutDate;
     @ManyToOne
     private Traveller user;

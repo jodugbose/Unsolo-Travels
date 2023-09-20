@@ -13,7 +13,6 @@ public class FlightBookingDto {
 
     private String arrivalLocation;
 
-    private LocalDate departureDate;
-
-    private LocalDate returnDate;
+    private String departureDate;
+    private String ReturnDate;
 }

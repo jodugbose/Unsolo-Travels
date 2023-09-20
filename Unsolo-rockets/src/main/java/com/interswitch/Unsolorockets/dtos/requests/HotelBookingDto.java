@@ -13,7 +13,7 @@ public class HotelBookingDto {
 
     private int guestNumber;
 
-    private LocalDate checkInDate;
+    private String checkInDate;
 
-    private LocalDate checkOutDate;
+    private String checkOutDate;
 }

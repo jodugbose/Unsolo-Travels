@@ -18,15 +18,17 @@ public class FlightBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String departureLocation;
-
+    @Column(nullable = false)
     private String arrivalLocation;
 
+    @Column(nullable = false)
     private LocalDate departureDate;
-
-    private LocalDate returnDate;
-
+    @Column(nullable = false)
+    private LocalDate arrivalDate;
     @ManyToOne
+//    @Column(nullable = false)
     private Traveller user;
 
 }

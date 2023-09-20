@@ -1181,25 +1181,29 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="331" parent="300" name="id">
-      <AutoIncrement>1</AutoIncrement>
+      <AutoIncrement>9</AutoIncrement>
       <DasType>bigint|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="332" parent="300" name="arrival_location">
-      <DasType>varchar(255)|0s</DasType>
+    <column id="332" parent="300" name="arrival_date">
+      <DasType>date|0s</DasType>
+      <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="333" parent="300" name="departure_date">
-      <DasType>date|0s</DasType>
+    <column id="333" parent="300" name="arrival_location">
+      <DasType>varchar(255)|0s</DasType>
+      <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="334" parent="300" name="departure_location">
-      <DasType>varchar(255)|0s</DasType>
+    <column id="334" parent="300" name="departure_date">
+      <DasType>date|0s</DasType>
+      <NotNull>1</NotNull>
       <Position>4</Position>
     </column>
-    <column id="335" parent="300" name="return_date">
-      <DasType>date|0s</DasType>
+    <column id="335" parent="300" name="departure_location">
+      <DasType>varchar(255)|0s</DasType>
+      <NotNull>1</NotNull>
       <Position>5</Position>
     </column>
     <column id="336" parent="300" name="user_id">
@@ -1233,10 +1237,12 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     </column>
     <column id="342" parent="301" name="check_in_date">
       <DasType>date|0s</DasType>
+      <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
     <column id="343" parent="301" name="check_out_date">
       <DasType>date|0s</DasType>
+      <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
     <column id="344" parent="301" name="guest_number">
@@ -1246,10 +1252,12 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     </column>
     <column id="345" parent="301" name="hotel">
       <DasType>varchar(255)|0s</DasType>
+      <NotNull>1</NotNull>
       <Position>5</Position>
     </column>
     <column id="346" parent="301" name="room_type">
       <DasType>varchar(255)|0s</DasType>
+      <NotNull>1</NotNull>
       <Position>6</Position>
     </column>
     <column id="347" parent="301" name="user_id">
