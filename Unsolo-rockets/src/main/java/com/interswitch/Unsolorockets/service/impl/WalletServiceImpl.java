@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 import static com.interswitch.Unsolorockets.utils.AppUtils.generateWalletId;
+import static com.interswitch.Unsolorockets.utils.Templates.generateCreditNotificationHtml;
+import static com.interswitch.Unsolorockets.utils.Templates.generateDebitNotificationHtml;
 
 @RequiredArgsConstructor
 @Service
@@ -88,10 +90,12 @@ public class WalletServiceImpl implements WalletService {
         Traveller receiver = travellerRepository.findById(receiverWallet.getUserId()).orElseThrow(() -> new CommonsException("user does not exist", HttpStatus.NOT_FOUND));
 
         // send transaction details to users
+        Wallet finalReceiverWallet = receiverWallet;
+        Wallet finalWallet = wallet;
         CompletableFuture.runAsync(() -> {
             try {
-                emailService.sendMail(sender.getEmail(), "DEBIT ALERT", "", "context/html");
-                emailService.sendMail(receiver.getEmail(), "CREDIT ALERT", "", "context/html");
+                emailService.sendMail(sender.getEmail(), "DEBIT ALERT", generateDebitNotificationHtml(transferRequestDto.getAmount(), finalWallet.getBalance(), transferCharge.getCharge(), sender.getFirstName()), "context/html");
+                emailService.sendMail(receiver.getEmail(), "CREDIT ALERT", generateCreditNotificationHtml(transferRequestDto.getAmount(), finalReceiverWallet.getBalance(), receiver.getFirstName()), "context/html");
 
             } catch (IOException e) {
                 log.error("an error occurred [{}] ", e.getMessage());
