@@ -1,8 +1,6 @@
-
 package com.interswitch.Unsolorockets.security;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,7 +14,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -31,9 +28,9 @@ public class SecurityConfiguration {
     private final String adminPath = "/api/admin";
     private final String flightPath = "/api/flight";
     private final String[] AUTH_WHITELIST = {
-            path +"/login/**", path + "/forgot-password", path + "/change-password",
-           path + "/register", tripPath+ "/", adminPath+ "/**", path+ "/verify-otp", "/api/admin/deactivate" , "/api/hotel/" , flightPath+"/",
-             "/api/user/{id}/update", path + "/**"
+            path + "/login/**", path + "/forgot-password", path + "/change-password",
+            path + "/register", tripPath + "/", adminPath + "/**", path + "/verify-otp", "/api/admin/deactivate", "/api/hotel/", flightPath + "/",
+            "/api/user/update", path + "/**"
 
     };
 
@@ -48,14 +45,14 @@ public class SecurityConfiguration {
                         authz.requestMatchers(AUTH_WHITELIST).permitAll()
                                 .anyRequest().authenticated())
 
-                .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());

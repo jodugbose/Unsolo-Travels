@@ -7,7 +7,9 @@ import com.interswitch.Unsolorockets.dtos.requests.UserDto;
 import com.interswitch.Unsolorockets.dtos.requests.UserUpdateRequest;
 import com.interswitch.Unsolorockets.dtos.responses.LoginResponse;
 import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
-import com.interswitch.Unsolorockets.exceptions.*;
+import com.interswitch.Unsolorockets.exceptions.InvalidCredentialsException;
+import com.interswitch.Unsolorockets.exceptions.UserException;
+import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import java.io.IOException;
 public class UserController {
 
     private final UserService userService;
+
     @PostMapping("/register")
     public ResponseEntity<UserProfileResponse> signUp(@RequestBody UserDto userDto) throws UserException, IOException {
         UserProfileResponse response = userService.createUser(userDto);
@@ -40,9 +43,10 @@ public class UserController {
         return new ResponseEntity<>(userService.verifyOTP(otpRequest), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/update")
-    public ResponseEntity<UserProfileResponse> updateUser(@PathVariable long id, @RequestBody UserUpdateRequest userUpdateRequest) throws  UserNotFoundException {
-        UserProfileResponse response = userService.updateUserDetails(id, userUpdateRequest);
+    @PutMapping("/update")
+    public ResponseEntity<UserProfileResponse> updateUserByEmail(@RequestParam String email, @RequestBody UserUpdateRequest userUpdateRequest) throws UserNotFoundException {
+        UserProfileResponse response = userService.updateUserDetails(email, userUpdateRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 }
