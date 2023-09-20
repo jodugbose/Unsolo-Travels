@@ -7,9 +7,16 @@ import com.interswitch.Unsolorockets.exceptions.TripNotFoundException;
 import com.interswitch.Unsolorockets.exceptions.UserException;
 import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 
+import java.util.List;
+
 public interface TripService {
     TripResponse createTrip(TripRequest request) throws UserException;
     TripResponse updateTripDetails(TripRequest request) throws UserException, TripNotFoundException;
     String deleteTrip(DeleteRequest request) throws TripNotFoundException, UserNotFoundException;
+
+    List<String> findMatchingTravellers(
+            String country, String aboutTheTrip, String journeyType,
+            boolean splitCost, double budget, boolean firstTime
+    );
 
 }
