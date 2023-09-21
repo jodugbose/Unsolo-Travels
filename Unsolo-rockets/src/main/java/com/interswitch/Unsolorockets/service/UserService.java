@@ -12,8 +12,6 @@ import java.io.IOException;
 public interface UserService {
     UserProfileResponse createUser(UserDto userDto) throws UserException, IOException;
 
-    String authenticateUser(String email, String password);
-
     String verifyOTP(OTPRequest otpRequest) throws UserNotFoundException;
 
     UserProfileResponse updateUserDetails(String email, UserUpdateRequest userUpdateRequest) throws UserNotFoundException;

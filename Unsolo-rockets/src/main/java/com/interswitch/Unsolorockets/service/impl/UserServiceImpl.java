@@ -24,9 +24,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileResponse createUser(UserDto userDto) throws UserException, IOException {
+    public UserProfileResponse createUser(UserDto userDto) throws UserException {
         boolean isValidEmail = appUtils.validEmail(userDto.getEmail());
         if (!isValidEmail) {
             throw new InvalidEmailException("Email is invalid");
@@ -126,32 +126,6 @@ public class UserServiceImpl implements UserService {
         user.setGender(Gender.valueOf(userDto.getGender().toUpperCase()));
         assignRole(userDto, user);
         return user;
-    }
-
-    public String authenticateUser(String email, String password) throws InvalidCredentialsException {
-        Optional<User> userOptional;
-
-        userOptional = adminRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            userOptional = travellerRepository.findByEmail(email);
-        }
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
-
-            if (!user.isVerified()) {
-                throw new InvalidCredentialsException("User has not been verified by email.");
-            }
-
-            if (confirmUserPasswords(password, user.getPassword())) {
-                return JwtTokenUtils.generateToken(user);
-            } else {
-                throw new InvalidCredentialsException("Incorrect password");
-            }
-        } else {
-            throw new InvalidCredentialsException("User not found");
-        }
     }
 
     @Override
@@ -250,6 +224,4 @@ public class UserServiceImpl implements UserService {
                 .gender(user.getGender().toString())
                 .build();
     }
-
-
 }
