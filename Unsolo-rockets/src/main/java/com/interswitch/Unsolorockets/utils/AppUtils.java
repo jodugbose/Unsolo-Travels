@@ -1,6 +1,7 @@
 package com.interswitch.Unsolorockets.utils;
 
 import com.interswitch.Unsolorockets.exceptions.UserException;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,10 @@ public class AppUtils {
         } else {
             throw new UserException("Date cannot be null", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public static String generateWalletId(){
+       return RandomStringUtils.randomNumeric(10);
     }
 
 }

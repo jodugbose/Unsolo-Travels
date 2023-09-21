@@ -12,9 +12,6 @@ import java.util.List;
 @Entity
 @Table(name = "travellers")
 public class Traveller extends User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<FlightBooking> flightBookings = new ArrayList<>();
