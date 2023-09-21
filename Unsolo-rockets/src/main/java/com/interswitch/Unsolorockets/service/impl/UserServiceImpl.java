@@ -208,16 +208,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileResponse updateUserDetails(long id, UserUpdateRequest userUpdateRequest) throws UserNotFoundException {
-        Optional<User> userOptional;
+    public UserProfileResponse updateUserDetails(String email, UserUpdateRequest userUpdateRequest) throws UserNotFoundException {
+        Optional<User> userOptional = adminRepository.findByEmail(email);
 
-        userOptional = adminRepository.findByEmail(userUpdateRequest.getEmail());
         if (userOptional.isEmpty()) {
-            userOptional = travellerRepository.findByEmail(userUpdateRequest.getEmail());
+            userOptional = travellerRepository.findByEmail(email);
         }
+
         if (userOptional.isEmpty()) {
             throw new UserNotFoundException();
         }
+
         User user = userOptional.get();
 
         if (userUpdateRequest.getFirstName() != null) {
