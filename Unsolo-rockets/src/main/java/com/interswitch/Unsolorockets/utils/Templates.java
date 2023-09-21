@@ -26,7 +26,7 @@ public class Templates {
                 + "</html>";
     }
 
-    public static String generateCreditNotificationHtml(BigDecimal creditAmount, BigDecimal walletBalance, String name) {
+    public static String generateCreditNotificationHtml(BigDecimal creditAmount, BigDecimal walletBalance, String name, String sender) {
 
         return "<html>"
                 + "<head>"
@@ -39,6 +39,7 @@ public class Templates {
                 + "<h2 style='color: green;'>Credit Notification</h2>"
                 + "<p>Hello " + name + ",</p>"
                 + "<p>A credit transaction has occurred on your account (wallet).</p>"
+                + "<p>Sender: " + sender + "</p>"
                 + "<p>Credit Amount: ₦" + creditAmount + "</p>"
                 + "<p>Wallet Balance: ₦" + walletBalance + "</p>"
                 + "<p>Thank you for using our service.</p>"

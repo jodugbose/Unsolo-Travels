@@ -47,7 +47,6 @@ public class WalletServiceImpl implements WalletService {
     private final IPasswordEncoder passwordEncoder;
 
 
-
     public void createWallet(long userId, CreateWalletRequest createWalletRequest) throws Exception {
         Wallet wallet = walletRepository.findByUserId(userId).orElseThrow(() -> new CommonsException("user already has a wallet", HttpStatus.CONFLICT));
         wallet.setWalletId(generateWalletId());
@@ -95,7 +94,7 @@ public class WalletServiceImpl implements WalletService {
         CompletableFuture.runAsync(() -> {
             try {
                 emailService.sendMail(sender.getEmail(), "DEBIT ALERT", generateDebitNotificationHtml(transferRequestDto.getAmount(), finalWallet.getBalance(), transferCharge.getCharge(), sender.getFirstName()), "context/html");
-                emailService.sendMail(receiver.getEmail(), "CREDIT ALERT", generateCreditNotificationHtml(transferRequestDto.getAmount(), finalReceiverWallet.getBalance(), receiver.getFirstName()), "context/html");
+                emailService.sendMail(receiver.getEmail(), "CREDIT ALERT", generateCreditNotificationHtml(transferRequestDto.getAmount(), finalReceiverWallet.getBalance(), receiver.getFirstName(), sender.getFirstName() + " " + sender.getLastName()), "context/html");
 
             } catch (IOException e) {
                 log.error("an error occurred [{}] ", e.getMessage());
