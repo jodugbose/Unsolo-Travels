@@ -19,7 +19,6 @@ public class WalletController {
 
     private final WalletService walletService;
 
-
     @PostMapping("/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
     public void createWallet(@PathVariable Long userId, @RequestBody CreateWalletRequest createWalletRequest) throws Exception {

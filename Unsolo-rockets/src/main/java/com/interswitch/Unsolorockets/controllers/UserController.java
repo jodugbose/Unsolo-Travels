@@ -10,10 +10,14 @@ import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
 import com.interswitch.Unsolorockets.exceptions.InvalidCredentialsException;
 import com.interswitch.Unsolorockets.exceptions.UserException;
 import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
+import com.interswitch.Unsolorockets.security.JwtUtils;
 import com.interswitch.Unsolorockets.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,6 +29,10 @@ public class UserController {
 
     private final UserService userService;
 
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtUtils jwtUtils;
+
     @PostMapping("/register")
     public ResponseEntity<UserProfileResponse> signUp(@RequestBody UserDto userDto) throws UserException, IOException {
         UserProfileResponse response = userService.createUser(userDto);
@@ -33,8 +41,8 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginDto loginRequest) throws InvalidCredentialsException {
-        String token = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
-        LoginResponse response = new LoginResponse(token);
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        LoginResponse response = new LoginResponse(jwtUtils.generateToken(authentication));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
