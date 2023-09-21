@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static com.interswitch.Unsolorockets.utils.AppUtils.generateWalletId;
@@ -48,11 +49,15 @@ public class WalletServiceImpl implements WalletService {
 
 
     public void createWallet(long userId, CreateWalletRequest createWalletRequest) throws Exception {
-        Wallet wallet = walletRepository.findByUserId(userId).orElseThrow(() -> new CommonsException("user already has a wallet", HttpStatus.CONFLICT));
-        wallet.setWalletId(generateWalletId());
-        wallet.setUserId(userId);
-        wallet.setPin(passwordEncoder.encode(createWalletRequest.getPin()));
-        walletRepository.save(wallet);
+        Optional<Wallet> wallet = walletRepository.findByUserId(userId);
+        if (wallet.isPresent()){
+            throw new CommonsException("user already has a wallet", HttpStatus.CONFLICT);
+        }
+        Wallet newWallet = new Wallet();
+        newWallet.setWalletId(generateWalletId());
+        newWallet.setUserId(userId);
+        newWallet.setPin(passwordEncoder.encode(createWalletRequest.getPin()));
+        walletRepository.save(newWallet);
     }
 
 
