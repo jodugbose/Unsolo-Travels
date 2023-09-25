@@ -2,27 +2,31 @@ package com.interswitch.Unsolorockets.chatbot;
 
 import org.alicebot.ab.Bot;
 import org.alicebot.ab.MagicBooleans;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
 
 import java.io.File;
 
 public class AddAiml {
-	
+
 	private static final boolean TRACE_MODE = false;
 	static String botName = "super";
-	
-	public static void main(String[] args) {
-		try {
 
-			String resourcesPath = getResourcesPath();
-			MagicBooleans.trace_mode = TRACE_MODE;
-			Bot bot = new Bot("super", resourcesPath);
-			
-			bot.writeAIMLFiles();
+	@Bean
+	CommandLineRunner commandLineRunner() {
+		return args -> {
+			try {
 
+				String resourcesPath = getResourcesPath();
+				MagicBooleans.trace_mode = TRACE_MODE;
+				Bot bot = new Bot("super", resourcesPath);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+				bot.writeAIMLFiles();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		};
 	}
 
 	private static String getResourcesPath() {
