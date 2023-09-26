@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
                         "<a href=" + url + ">verify here</a></p>" +
                         "</body> " +
                         "</html>";
-//        emailService.sendMail(email, subject, body, "text/html");
+
 
         if (createdUser instanceof Traveller) {
             travellerRepository.save((Traveller) createdUser);
