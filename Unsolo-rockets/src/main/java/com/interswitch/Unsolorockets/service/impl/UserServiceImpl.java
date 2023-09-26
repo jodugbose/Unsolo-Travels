@@ -24,9 +24,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileResponse createUser(UserDto userDto) throws UserException, IOException {
+    public UserProfileResponse createUser(UserDto userDto) throws UserException {
         boolean isValidEmail = appUtils.validEmail(userDto.getEmail());
         if (!isValidEmail) {
             throw new InvalidEmailException("Email is invalid");
@@ -128,32 +128,6 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    public String authenticateUser(String email, String password) throws InvalidCredentialsException {
-        Optional<User> userOptional;
-
-        userOptional = adminRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            userOptional = travellerRepository.findByEmail(email);
-        }
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
-
-            if (!user.isVerified()) {
-                throw new InvalidCredentialsException("User has not been verified by email.");
-            }
-
-            if (confirmUserPasswords(password, user.getPassword())) {
-                return JwtTokenUtils.generateToken(user);
-            } else {
-                throw new InvalidCredentialsException("Incorrect password");
-            }
-        } else {
-            throw new InvalidCredentialsException("User not found");
-        }
-    }
-
     @Override
     public String verifyOTP(OTPRequest otpRequest) throws UserNotFoundException {
         Optional<User> userOptional;
@@ -208,16 +182,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileResponse updateUserDetails(long id, UserUpdateRequest userUpdateRequest) throws UserNotFoundException {
-        Optional<User> userOptional;
+    public UserProfileResponse updateUserDetails(String email, UserUpdateRequest userUpdateRequest) throws UserNotFoundException {
+        Optional<User> userOptional = adminRepository.findByEmail(email);
 
-        userOptional = adminRepository.findByEmail(userUpdateRequest.getEmail());
         if (userOptional.isEmpty()) {
-            userOptional = travellerRepository.findByEmail(userUpdateRequest.getEmail());
+            userOptional = travellerRepository.findByEmail(email);
         }
+
         if (userOptional.isEmpty()) {
             throw new UserNotFoundException();
         }
+
         User user = userOptional.get();
 
         if (userUpdateRequest.getFirstName() != null) {
@@ -249,6 +224,4 @@ public class UserServiceImpl implements UserService {
                 .gender(user.getGender().toString())
                 .build();
     }
-
-
 }
