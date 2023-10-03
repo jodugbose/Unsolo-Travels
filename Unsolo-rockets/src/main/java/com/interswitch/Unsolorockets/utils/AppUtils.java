@@ -23,8 +23,8 @@ public class AppUtils {
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return email.matches(regex);
     }
-    public static boolean validNINDtoRequest(String ninId) {
-        String regex = "^[0-9]{11}$";
+    public static boolean validateNinId(String ninId) {
+        String regex = "\\d{11}";
         return ninId != null && ninId.matches(regex);
     }
 

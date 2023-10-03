@@ -19,4 +19,5 @@ public class Traveller extends User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<HotelBooking> hotelBookings = new ArrayList<>();
 
+
 }
