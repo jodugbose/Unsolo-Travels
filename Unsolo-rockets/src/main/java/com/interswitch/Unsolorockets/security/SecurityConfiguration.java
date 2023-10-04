@@ -34,7 +34,7 @@ public class SecurityConfiguration {
     private final String flightPath = "/api/flight";
     private final String[] AUTH_WHITELIST = {
             path + "/login/**", path + "/forgot-password", path + "/change-password",
-            path + "/register", tripPath + "/", adminPath + "/**", path + "/verify-otp", "/api/admin/deactivate", "/api/hotel/", flightPath + "/",
+            path + "/register", tripPath + "/**", adminPath + "/**", path + "/verify-otp", "/api/admin/deactivate", "/api/hotel/", flightPath + "/",
             "/api/user/update", path + "/**", "/ws/**"
 
     };

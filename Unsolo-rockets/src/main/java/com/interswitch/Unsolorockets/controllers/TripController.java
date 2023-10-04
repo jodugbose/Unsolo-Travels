@@ -35,4 +35,15 @@ public class TripController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("{travellerId}")
+    public ResponseEntity<?> viewTravellerTrips(@PathVariable long travellerId){
+        var response = tripService.findTravellerTrips(travellerId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> viewAllTrips(){
+        var response = tripService.findAllTrips();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
