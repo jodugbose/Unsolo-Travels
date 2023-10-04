@@ -51,6 +51,7 @@ public abstract class User {
     private String validOTP;
 
     private String tokenForEmail;
+    @Column(unique = true)
     private String ninId;
     private boolean kycVerified;
     @CreationTimestamp

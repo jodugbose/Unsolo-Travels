@@ -101,13 +101,15 @@ public class GlobalExceptionHandler  {
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(value = InvalidNinValidationException.class)
-    public ResponseEntity<ApiErrorResponse> handlesInvalidNinValidationException(InvalidNinValidationException ex) {
-        var apiErrorResponse = new ApiErrorResponse(409, ex.getMessage(), new Date());
-        return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> handlesInvalidNinValidationException(InvalidNinValidationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(value = RuntimeException.class)
-    public ResponseEntity<ApiErrorResponse> handlesRuntimeException(RuntimeException ex) {
-        var apiErrorResponse = new ApiErrorResponse(409, ex.getMessage(), new Date());
-        return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> handlesRuntimeException(RuntimeException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(value = KycVerifiedException.class)
+    public ResponseEntity<String> handlesKycVerifiedException(KycVerifiedException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 }

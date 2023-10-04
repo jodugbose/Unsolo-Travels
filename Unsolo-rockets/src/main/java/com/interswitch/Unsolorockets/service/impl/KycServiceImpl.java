@@ -2,6 +2,7 @@ package com.interswitch.Unsolorockets.service.impl;
 
 import com.interswitch.Unsolorockets.dtos.responses.KycResponse;
 import com.interswitch.Unsolorockets.exceptions.InvalidNinValidationException;
+import com.interswitch.Unsolorockets.exceptions.KycVerifiedException;
 import com.interswitch.Unsolorockets.exceptions.UserAlreadyExistException;
 import com.interswitch.Unsolorockets.models.Traveller;
 import com.interswitch.Unsolorockets.models.User;
@@ -22,7 +23,6 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class KycServiceImpl implements KycService {
-
     private final WebClient webClient;
     @Autowired
     private final TravellerRepository travellerRepository;
@@ -45,11 +45,9 @@ public class KycServiceImpl implements KycService {
         this.encoder = encoder;
         this.customUserDetailService = customUserDetailService;
         this.jwtUtils = jwtUtils;
-
     }
 
-
-    public String ninValidationRequest(String ninId) throws InvalidNinValidationException, UserAlreadyExistException {
+    public Mono<?> ninValidationRequest(String ninId) throws InvalidNinValidationException, UserAlreadyExistException {
         UserDetails userDetails = CustomUserDetailService.getLoggedInUserId();
         String userDetailsUserName = userDetails.getUsername();
 
@@ -58,8 +56,11 @@ public class KycServiceImpl implements KycService {
         if (!AppUtils.validateNinId(ninId)) {
             throw new IllegalArgumentException("NIN must be 11 digits");
         }
+        if (user.getNinId() != null) {
+            throw new KycVerifiedException("Verified");
+        }
 
-            Mono<Traveller> responseJson = webClient
+        Mono<?> responseJson = webClient
                     .post()
                     .uri("/nin/{nin_id}", ninId)
                     .accept(MediaType.APPLICATION_JSON)
@@ -84,10 +85,10 @@ public class KycServiceImpl implements KycService {
                         authUser.setKycVerified(true);
                        travellerRepository.save(authUser);
 
-                        return Mono.just(authUser);
+                        return Mono.just("KYC-Verification Successful");
                     })
                     .switchIfEmpty(Mono.empty());
-              return "Verification Successful";
+              return responseJson;
 
 
     }
