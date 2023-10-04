@@ -23,7 +23,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -122,6 +125,40 @@ public class TripServiceImpl implements TripService {
         tripRepository.delete(trip);
         return "Delete success";
     }
+    @Override
+    public List<String> findMatchingTravellers(TripRequest filterRequest) {
+        List<Trip> trips = tripRepository.findAll();
 
+        // Step 1: Filter by country
+        List<Trip> matchingTrips = trips.stream()
+                .filter(trip -> trip.getCountry().equalsIgnoreCase(filterRequest.getCountry()))
+                .collect(Collectors.toList());
 
+        // Step 2: Check if country matched
+        if (matchingTrips.isEmpty()) {
+            return Collections.emptyList(); // No match if the country doesn't match
+        }
+
+        // Step 3: Filter by journey type
+        matchingTrips = matchingTrips.stream()
+                .filter(trip -> trip.getJourneyType().toString().equalsIgnoreCase(filterRequest.getJourneyType()))
+                .collect(Collectors.toList());
+
+        // Step 4: Map to traveler names
+        List<String> matchingTravellers = matchingTrips.stream()
+                .map(trip -> getTravellerName(trip.getTravellerId()))
+                .collect(Collectors.toList());
+
+        return matchingTravellers;
+    }
+
+    private String getTravellerName(Long travelerId) {
+        Optional<Traveller> optionalTraveller = travellerRepository.findById(travelerId);
+        if (optionalTraveller.isPresent()) {
+            Traveller traveller = optionalTraveller.get();
+
+            return traveller.getFirstName() + " " + traveller.getLastName();
+        }
+        return ""; // Return an empty string if the traveler is not found
+    }
 }
