@@ -14,6 +14,8 @@ import com.interswitch.Unsolorockets.respository.TripRepository;
 import com.interswitch.Unsolorockets.service.TripService;
 import com.interswitch.Unsolorockets.utils.AppUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TripServiceImpl implements TripService {
     private final TripRepository tripRepository;
@@ -33,20 +36,32 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public TripResponse createTrip(TripRequest request) throws UserException {
+        log.info(String.valueOf(request));
+
         Optional<Traveller> optionalTraveller = travellerRepository.findById(Long.valueOf(request.getTravellerId()));
+        log.info(String.valueOf(request));
         if (optionalTraveller.isEmpty()) {
             throw new UserNotFoundException();
         }
+
+        log.info(String.valueOf(request));
+
         Traveller traveller = optionalTraveller.get();
         Trip trip = new Trip();
         BeanUtils.copyProperties(request, trip);
+
+        log.info(String.valueOf(trip));
+
         LocalDate departureDate = appUtils.createLocalDate(request.getDepartureDate());
         LocalDate arrivalDate = appUtils.createLocalDate(request.getArrivalDate());
         trip.setDepartureDate(departureDate);
         trip.setArrivalDate(arrivalDate);
         trip.setTravellerId(traveller.getId());
         trip.setJourneyType(JourneyType.valueOf(request.getJourneyType().toUpperCase()));
+
+        log.info(String.valueOf(request));
         tripRepository.save(trip);
+
         TripResponse tripResponse = new TripResponse();
         BeanUtils.copyProperties(request, tripResponse);
         tripResponse.setTravellerName(traveller.getFirstName());
