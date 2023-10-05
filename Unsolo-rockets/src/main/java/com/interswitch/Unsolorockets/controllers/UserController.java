@@ -5,6 +5,7 @@ import com.interswitch.Unsolorockets.dtos.requests.LoginDto;
 import com.interswitch.Unsolorockets.dtos.requests.OTPRequest;
 import com.interswitch.Unsolorockets.dtos.requests.UserDto;
 import com.interswitch.Unsolorockets.dtos.requests.UserUpdateRequest;
+import com.interswitch.Unsolorockets.dtos.responses.DashboardResponse;
 import com.interswitch.Unsolorockets.dtos.responses.LoginResponse;
 import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
 import com.interswitch.Unsolorockets.exceptions.InvalidCredentialsException;
@@ -57,4 +58,9 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<DashboardResponse> getUserProfile(@RequestParam String email) throws UserNotFoundException {
+        DashboardResponse userProfile = userService. userDashboard(email);
+        return new ResponseEntity<>(userProfile, HttpStatus.OK);
+    }
 }
