@@ -38,6 +38,7 @@ public class SecurityConfiguration {
             path + "/register", tripPath + "/", adminPath + "/**", path + "/verify-otp", "/api/admin/deactivate", "/api/hotel/", flightPath + "/",
             "/api/user/update", path + "/**", "/ws/**", kycPath + "/**",
             path + "/register", tripPath + "/",tripPath + "/match", adminPath + "/**", path + "/verify-otp", "/api/admin/deactivate", "/api/hotel/", flightPath + "/",
+            path + "/register", tripPath + "/**", adminPath + "/**", path + "/verify-otp", "/api/admin/deactivate", "/api/hotel/", flightPath + "/",
             "/api/user/update", path + "/**", "/ws/**"
 
     };
