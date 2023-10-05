@@ -133,15 +133,6 @@ public class TripServiceImpl implements TripService {
         if (matchingTrips.isEmpty()) {
             return Collections.emptyList(); // No match if the country doesn't match
         }
-    @Override
-    public List<Trip> findTravellerTrips(long travellerId) {
-       return tripRepository.findTripsByTravellerId(travellerId);
-    }
-
-    @Override
-    public List<Trip> findAllTrips() {
-        return tripRepository.findAll();
-    }
 
 
         // Step 3: Filter by journey type
@@ -155,6 +146,16 @@ public class TripServiceImpl implements TripService {
                 .collect(Collectors.toList());
 
         return matchingTravellers;
+    }
+
+    @Override
+    public List<Trip> findTravellerTrips(long travellerId) {
+        return tripRepository.findTripsByTravellerId(travellerId);
+    }
+
+    @Override
+    public List<Trip> findAllTrips() {
+        return tripRepository.findAll();
     }
 
     private String getTravellerName(Long travelerId) {
