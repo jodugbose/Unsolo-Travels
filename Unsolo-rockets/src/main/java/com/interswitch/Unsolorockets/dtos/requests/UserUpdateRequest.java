@@ -12,5 +12,8 @@ public class UserUpdateRequest {
     private String password;
     private String email;
     private String gender;
+    private String location;
+    private String description;
+    private String profilePicture;
 
 }
