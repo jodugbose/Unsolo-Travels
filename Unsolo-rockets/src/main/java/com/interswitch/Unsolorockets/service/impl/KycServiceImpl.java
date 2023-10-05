@@ -57,7 +57,7 @@ public class KycServiceImpl implements KycService {
             throw new IllegalArgumentException("NIN must be 11 digits");
         }
         if (user.getNinId() != null) {
-            throw new KycVerifiedException("Verified");
+            return Mono.just("Verified");
         }
 
         Mono<?> responseJson = webClient
@@ -85,7 +85,7 @@ public class KycServiceImpl implements KycService {
                         authUser.setKycVerified(true);
                        travellerRepository.save(authUser);
 
-                        return Mono.just("KYC-Verification Successful");
+                        return Mono.just("NIN Verification Successful");
                     })
                     .switchIfEmpty(Mono.empty());
               return responseJson;
