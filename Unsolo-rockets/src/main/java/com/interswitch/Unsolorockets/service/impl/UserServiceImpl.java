@@ -26,6 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileResponse createUser(UserDto userDto) throws UserException {
+    public UserProfileResponse createUser(UserDto userDto) throws UserException, IOException {
         boolean isValidEmail = appUtils.validEmail(userDto.getEmail());
         if (!isValidEmail) {
             throw new InvalidEmailException("Email is invalid");
@@ -95,7 +96,7 @@ public class UserServiceImpl implements UserService {
                         "<a href=" + url + ">verify here</a></p>" +
                         "</body> " +
                         "</html>";
-
+//        emailService.sendMail(email, subject, body, "text/html");
 
         if (createdUser instanceof Traveller) {
             travellerRepository.save((Traveller) createdUser);
