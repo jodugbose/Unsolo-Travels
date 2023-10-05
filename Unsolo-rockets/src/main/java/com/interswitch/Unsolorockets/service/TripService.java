@@ -14,6 +14,7 @@ public interface TripService {
     TripResponse createTrip(TripRequest request) throws UserException;
     TripResponse updateTripDetails(TripRequest request) throws UserException, TripNotFoundException;
     String deleteTrip(DeleteRequest request) throws TripNotFoundException, UserNotFoundException;
+    List<String> findMatchingTravellers(TripRequest filterRequest);
 
     List<Trip> findTravellerTrips(long travellerId);
     List<Trip> findAllTrips();
