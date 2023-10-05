@@ -3,11 +3,11 @@ package com.interswitch.Unsolorockets.service.impl;
 import com.interswitch.Unsolorockets.dtos.requests.OTPRequest;
 import com.interswitch.Unsolorockets.dtos.requests.UserDto;
 import com.interswitch.Unsolorockets.dtos.requests.UserUpdateRequest;
+import com.interswitch.Unsolorockets.dtos.responses.DashboardResponse;
 import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
 import com.interswitch.Unsolorockets.exceptions.*;
 import com.interswitch.Unsolorockets.models.Admin;
 import com.interswitch.Unsolorockets.models.Traveller;
-import com.interswitch.Unsolorockets.models.Trip;
 import com.interswitch.Unsolorockets.models.User;
 import com.interswitch.Unsolorockets.models.enums.Gender;
 import com.interswitch.Unsolorockets.models.enums.Role;
@@ -218,6 +218,18 @@ public class UserServiceImpl implements UserService {
             user.setGender(Gender.valueOf(userUpdateRequest.getGender().toUpperCase()));
         }
 
+        if (userUpdateRequest.getLocation() != null) {
+            user.setLocation(userUpdateRequest.getLocation());
+        }
+
+        if (userUpdateRequest.getDescription() != null) {
+            user.setDescription(userUpdateRequest.getDescription());
+        }
+
+        if (userUpdateRequest.getProfilePicture() != null) {
+            user.setProfilePicture(userUpdateRequest.getProfilePicture());
+        }
+
         if (user.getRole().equals(Role.ADMIN)) {
             adminRepository.save((Admin) user);
         } else {
@@ -229,8 +241,29 @@ public class UserServiceImpl implements UserService {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .gender(user.getGender().toString())
+                .location(user.getLocation())
+                .description(user.getDescription())
+                .profilePicture(user.getProfilePicture())
                 .build();
     }
 
+    public DashboardResponse userDashboard(String email) throws UserNotFoundException {
+        Optional<User> userOptional = adminRepository.findByEmail(email);
 
+        if (userOptional.isEmpty()) {
+            userOptional = travellerRepository.findByEmail(email);
+        }
+
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+        User user = userOptional.get();
+
+        return DashboardResponse.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .description(user.getDescription())
+                .build();
+    }
 }
