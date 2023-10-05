@@ -56,4 +56,13 @@ public abstract class User {
     private boolean kycVerified;
     @CreationTimestamp
     private Date createdAt;
+
+    @Column
+    private String location;
+
+    @Column
+    private String description;
+
+    @Column
+    private String profilePicture;
 }
