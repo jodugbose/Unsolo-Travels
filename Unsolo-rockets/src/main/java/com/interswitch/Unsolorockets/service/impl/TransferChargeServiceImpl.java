@@ -26,7 +26,7 @@ public class TransferChargeServiceImpl implements TransferChargeService {
         CustomUser user = getLoggedInUser();
         TransferCharge transferCharge = transferChargeRepository.findById(1L).orElse(new TransferCharge());
         transferCharge.setCharge(updateTransferChargeDto.getCharge());
-        transferCharge.setId(user.getId());
+        transferCharge.setUserId(user.getId());
         transferChargeRepository.save(transferCharge);
         return TransferChargeDto.builder()
                 .charge(updateTransferChargeDto.getCharge())

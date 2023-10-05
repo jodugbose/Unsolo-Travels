@@ -74,7 +74,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     @Transactional
-    public TransferResponse transfer(TransferRequestDto transferRequestDto) throws CommonsException, IOException {
+    public TransferResponse transfer(TransferRequestDto transferRequestDto) throws CommonsException {
         CustomUser user = getLoggedInUser();
 
         Wallet wallet = walletRepository.findByUserId(user.getId()).orElseThrow(() -> new CommonsException("user does not have a wallet", HttpStatus.NOT_FOUND));

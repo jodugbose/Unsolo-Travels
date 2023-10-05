@@ -17,7 +17,7 @@ public class TransferChargeController {
 
     private final TransferChargeService transferChargeService;
 
-    @PutMapping("update")
+    @PutMapping("/update")
     @PreAuthorize(ADMIN_PREAUTHORIZE)
     public ResponseEntity<?> setTransferCharge(@RequestBody UpdateTransferChargeDto updateTransferChargeDto) throws UserNotFoundException {
         return ResponseEntity.ok(transferChargeService.updateCharge(updateTransferChargeDto));
