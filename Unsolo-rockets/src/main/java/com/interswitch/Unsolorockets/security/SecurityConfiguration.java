@@ -36,7 +36,9 @@ public class SecurityConfiguration {
     private final String[] AUTH_WHITELIST = {
             path + "/login/**", path + "/forgot-password", path + "/change-password",
             path + "/register", tripPath + "/", adminPath + "/**", path + "/verify-otp", "/api/admin/deactivate", "/api/hotel/", flightPath + "/",
-            "/api/user/update", path + "/**", "/ws/**", kycPath + "/**"
+            "/api/user/update", path + "/**", "/ws/**", kycPath + "/**",
+            path + "/register", tripPath + "/",tripPath + "/match", adminPath + "/**", path + "/verify-otp", "/api/admin/deactivate", "/api/hotel/", flightPath + "/",
+            "/api/user/update", path + "/**", "/ws/**"
 
     };
 
@@ -64,7 +66,7 @@ public class SecurityConfiguration {
          corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:5174"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With", "Requestor-Type")); //, "Access-Control-Allow-Origin")
-        corsConfiguration.setExposedHeaders(Arrays.asList( "Authorization", "X-Get-Header"));
+        corsConfiguration.setExposedHeaders(Arrays.asList("Authorization", "X-Get-Header"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET","POST","PATCH", "PUT", "DELETE", "OPTIONS", "HEAD"));
         corsConfiguration.setMaxAge(3600L);
 
