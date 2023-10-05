@@ -53,7 +53,7 @@ public abstract class User {
     private String tokenForEmail;
     @Column(unique = true)
     private String ninId;
-    private boolean kycVerified;
+    private Boolean kycVerified;
     @CreationTimestamp
     private Date createdAt;
 }

@@ -16,9 +16,9 @@ public class PaymentController {
     private final PaymentService paymentService;
 
 
-    @PostMapping("/initiate/{userId}")
-    public ResponseEntity<?> initiatePayment(@PathVariable Long userId, @RequestBody PaymentRequestDto paymentRequestDto) throws CommonsException {
-        return new ResponseEntity<>(paymentService.initiatePayment(userId, paymentRequestDto), HttpStatus.OK);
+    @PostMapping("/initiate")
+    public ResponseEntity<?> initiatePayment(@RequestBody PaymentRequestDto paymentRequestDto) throws CommonsException {
+        return new ResponseEntity<>(paymentService.initiatePayment(paymentRequestDto), HttpStatus.OK);
     }
 
     @GetMapping("/status/{reference}")

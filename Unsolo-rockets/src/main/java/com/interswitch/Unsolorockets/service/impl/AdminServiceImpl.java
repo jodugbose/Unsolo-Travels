@@ -2,7 +2,6 @@ package com.interswitch.Unsolorockets.service.impl;
 
 import com.interswitch.Unsolorockets.dtos.requests.PackageDto;
 import com.interswitch.Unsolorockets.exceptions.PackageException;
-import com.interswitch.Unsolorockets.exceptions.UserAlreadyExistException;
 import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.models.Destination;
 import com.interswitch.Unsolorockets.models.Package;

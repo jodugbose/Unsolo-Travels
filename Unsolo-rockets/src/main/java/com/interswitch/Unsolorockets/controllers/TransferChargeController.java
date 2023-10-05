@@ -1,6 +1,7 @@
 package com.interswitch.Unsolorockets.controllers;
 
 import com.interswitch.Unsolorockets.dtos.UpdateTransferChargeDto;
+import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.service.TransferChargeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,10 @@ public class TransferChargeController {
 
     private final TransferChargeService transferChargeService;
 
-    @PutMapping("update/{userId}")
+    @PutMapping("update")
     @PreAuthorize(ADMIN_PREAUTHORIZE)
-    public ResponseEntity<?> setTransferCharge(@PathVariable String userId, @RequestBody UpdateTransferChargeDto updateTransferChargeDto) {
-        return ResponseEntity.ok(transferChargeService.updateCharge(Long.parseLong(userId), updateTransferChargeDto));
+    public ResponseEntity<?> setTransferCharge(@RequestBody UpdateTransferChargeDto updateTransferChargeDto) throws UserNotFoundException {
+        return ResponseEntity.ok(transferChargeService.updateCharge(updateTransferChargeDto));
     }
 
     @GetMapping
