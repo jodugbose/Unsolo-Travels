@@ -3,17 +3,12 @@ package com.interswitch.Unsolorockets.service.impl;
 import com.interswitch.Unsolorockets.dtos.requests.DeleteRequest;
 import com.interswitch.Unsolorockets.dtos.requests.TripRequest;
 import com.interswitch.Unsolorockets.dtos.responses.TripResponse;
-import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
 import com.interswitch.Unsolorockets.exceptions.TripNotFoundException;
 import com.interswitch.Unsolorockets.exceptions.UserException;
 import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
-import com.interswitch.Unsolorockets.models.Admin;
 import com.interswitch.Unsolorockets.models.Traveller;
 import com.interswitch.Unsolorockets.models.Trip;
-import com.interswitch.Unsolorockets.models.User;
-import com.interswitch.Unsolorockets.models.enums.Gender;
 import com.interswitch.Unsolorockets.models.enums.JourneyType;
-import com.interswitch.Unsolorockets.models.enums.Role;
 import com.interswitch.Unsolorockets.respository.TravellerRepository;
 import com.interswitch.Unsolorockets.respository.TripRepository;
 import com.interswitch.Unsolorockets.service.TripService;
@@ -139,6 +134,7 @@ public class TripServiceImpl implements TripService {
             return Collections.emptyList(); // No match if the country doesn't match
         }
 
+
         // Step 3: Filter by journey type
         matchingTrips = matchingTrips.stream()
                 .filter(trip -> trip.getJourneyType().toString().equalsIgnoreCase(filterRequest.getJourneyType()))
@@ -150,6 +146,16 @@ public class TripServiceImpl implements TripService {
                 .collect(Collectors.toList());
 
         return matchingTravellers;
+    }
+
+    @Override
+    public List<Trip> findTravellerTrips(long travellerId) {
+        return tripRepository.findTripsByTravellerId(travellerId);
+    }
+
+    @Override
+    public List<Trip> findAllTrips() {
+        return tripRepository.findAll();
     }
 
     private String getTravellerName(Long travelerId) {
