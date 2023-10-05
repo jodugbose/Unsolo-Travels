@@ -2,6 +2,7 @@ package com.interswitch.Unsolorockets.controllers;
 
 import com.interswitch.Unsolorockets.exceptions.InvalidNinValidationException;
 import com.interswitch.Unsolorockets.exceptions.UserAlreadyExistException;
+import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.service.KycService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ import reactor.core.publisher.Mono;
 public class KycController {
     private final KycService kycService;
     @PostMapping("/nin/{nin_id}")
-    public ResponseEntity<Mono<?>> verifyNIN(@PathVariable(value = "nin_id") String ninId) throws InvalidNinValidationException,IllegalArgumentException, UserAlreadyExistException{
+    public ResponseEntity<Mono<?>> verifyNIN(@PathVariable(value = "nin_id") String ninId) throws InvalidNinValidationException, IllegalArgumentException, UserAlreadyExistException, UserNotFoundException {
         var kyc = kycService.ninValidationRequest(ninId);
         return new ResponseEntity<>(kyc, HttpStatus.OK);
 }
