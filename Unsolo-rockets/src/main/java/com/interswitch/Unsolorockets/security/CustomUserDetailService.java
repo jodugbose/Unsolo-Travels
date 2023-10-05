@@ -6,7 +6,10 @@ import com.interswitch.Unsolorockets.respository.AdminRepository;
 import com.interswitch.Unsolorockets.respository.TravellerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -42,5 +45,14 @@ public class CustomUserDetailService implements UserDetailsService {
         }
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(), user.getPassword(), Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
+    }
+
+    public static UserDetails getLoggedInUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            return (UserDetails) authentication.getPrincipal();
+        } else {
+            return null;
+        }
     }
 }

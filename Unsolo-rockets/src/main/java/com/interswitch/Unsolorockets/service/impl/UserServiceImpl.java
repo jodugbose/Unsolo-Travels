@@ -7,6 +7,7 @@ import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
 import com.interswitch.Unsolorockets.exceptions.*;
 import com.interswitch.Unsolorockets.models.Admin;
 import com.interswitch.Unsolorockets.models.Traveller;
+import com.interswitch.Unsolorockets.models.Trip;
 import com.interswitch.Unsolorockets.models.User;
 import com.interswitch.Unsolorockets.models.enums.Gender;
 import com.interswitch.Unsolorockets.models.enums.Role;
@@ -14,6 +15,7 @@ import com.interswitch.Unsolorockets.respository.AdminRepository;
 import com.interswitch.Unsolorockets.respository.TravellerRepository;
 import com.interswitch.Unsolorockets.security.IPasswordEncoder;
 import com.interswitch.Unsolorockets.service.EmailService;
+import com.interswitch.Unsolorockets.service.TripService;
 import com.interswitch.Unsolorockets.service.UserService;
 import com.interswitch.Unsolorockets.utils.AppUtils;
 import com.interswitch.Unsolorockets.utils.JwtTokenUtils;
@@ -24,7 +26,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -41,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
     private final HttpServletRequest request;
     private final AppUtils appUtils;
+    private final TripService tripService;
 
     private static void assignRole(UserDto userDto, User user) {
         if (userDto.getRole() == null || userDto.getRole().equalsIgnoreCase(String.valueOf(Role.TRAVELLER))) {
@@ -51,7 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileResponse createUser(UserDto userDto) throws UserException {
+    public UserProfileResponse createUser(UserDto userDto) throws UserException, IOException {
         boolean isValidEmail = appUtils.validEmail(userDto.getEmail());
         if (!isValidEmail) {
             throw new InvalidEmailException("Email is invalid");
@@ -72,6 +77,7 @@ public class UserServiceImpl implements UserService {
         createdUser.setTokenForEmail(token);
 
         String otp = String.valueOf(appUtils.generateOTP());
+        createdUser.setValidOTP(otp);
         createdUser.setValidOTP(passwordEncoder.encode(otp));
 
         String url = "http://" + request.getServerName() + ":8080" + "/api/v1/verify-email?token="
@@ -144,7 +150,8 @@ public class UserServiceImpl implements UserService {
             return "This account is already verified";
         }
 
-        if (passwordEncoder.matches(otpRequest.getOtp(), user.getValidOTP())) {
+         //if (passwordEncoder.matches(otpRequest.getOtp(), user.getValidOTP())) {
+        if(otpRequest.getOtp().equals(user.getValidOTP())){
             user.setVerified(true);
             if (user.getRole().equals(Role.ADMIN)) {
                 adminRepository.save((Admin) user);
@@ -224,4 +231,6 @@ public class UserServiceImpl implements UserService {
                 .gender(user.getGender().toString())
                 .build();
     }
+
+
 }
