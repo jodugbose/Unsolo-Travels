@@ -9,12 +9,15 @@ import com.interswitch.Unsolorockets.respository.TransactionRepository;
 import com.interswitch.Unsolorockets.respository.TravellerRepository;
 import com.interswitch.Unsolorockets.respository.WalletRepository;
 import com.interswitch.Unsolorockets.utils.IAppendableReferenceUtils;
+import com.interswitch.Unsolorockets.utils.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.interswitch.Unsolorockets.utils.UserUtil.getLoggedInUser;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +33,9 @@ public class PaymentService {
     private final TransactionRepository transactionRepository;
 
     @Transactional
-    public PaymentInitiationResponse initiatePayment(Long userId, PaymentRequestDto paymentRequestDto) throws CommonsException {
-
+    public PaymentInitiationResponse initiatePayment(PaymentRequestDto paymentRequestDto) throws CommonsException {
+        CustomUser user = getLoggedInUser();
+        long userId = user.getId();
         Traveller traveller = travellerRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         Customer customer = new Customer();

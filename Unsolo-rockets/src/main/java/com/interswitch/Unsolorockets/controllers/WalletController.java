@@ -19,20 +19,20 @@ public class WalletController {
 
     private final WalletService walletService;
 
-    @PostMapping("/{userId}")
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createWallet(@PathVariable Long userId, @RequestBody CreateWalletRequest createWalletRequest) throws Exception {
-        walletService.createWallet(userId, createWalletRequest);
+    public void createWallet(@RequestBody CreateWalletRequest createWalletRequest) throws Exception {
+        walletService.createWallet(createWalletRequest);
     }
 
-    @GetMapping("wallet-info/{userId}")
-    public ResponseEntity<?> getUserWallet(@PathVariable Long userId) throws CommonsException {
-        return new ResponseEntity<>(walletService.getWallet(userId), HttpStatus.OK);
+    @GetMapping("wallet-info")
+    public ResponseEntity<?> getUserWallet() throws CommonsException {
+        return new ResponseEntity<>(walletService.getWallet(), HttpStatus.OK);
     }
 
-    @PostMapping("/transfer/{userId}")
-    public ResponseEntity<?> transfer(@PathVariable Long userId, @RequestBody TransferRequestDto transferRequestDto) throws CommonsException, IOException {
-        TransferResponse response = walletService.transfer(userId, transferRequestDto);
+    @PostMapping("/transfer")
+    public ResponseEntity<?> transfer(@RequestBody TransferRequestDto transferRequestDto) throws CommonsException, IOException {
+        TransferResponse response = walletService.transfer(transferRequestDto);
         return ResponseEntity.ok(response);
     }
 }
