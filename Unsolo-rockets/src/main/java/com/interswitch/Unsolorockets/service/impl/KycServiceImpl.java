@@ -61,7 +61,7 @@ public class KycServiceImpl implements KycService {
         }
 
         Mono<?> responseJson = webClient
-                    .post()
+                    .get()
                     .uri("/nin/{nin_id}", ninId)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
