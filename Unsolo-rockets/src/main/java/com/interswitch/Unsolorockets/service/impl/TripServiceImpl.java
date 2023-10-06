@@ -18,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -99,10 +100,8 @@ public class TripServiceImpl implements TripService {
             trip.setJourneyType(JourneyType.valueOf(request.getJourneyType().toUpperCase()));
         }
 
-        tripRepository.save(trip);
-
-        TripResponse tripResponse = new TripResponse();
-        BeanUtils.copyProperties(request, tripResponse);
+        Trip savedTrip = tripRepository.save(trip);
+        TripResponse tripResponse = createTripResponse(savedTrip);
         tripResponse.setTravellerName(traveller.getFirstName());
         tripResponse.setArrivalDate(arrivalDate);
         tripResponse.setDepartureDate(departureDate);
@@ -149,13 +148,17 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public List<Trip> findTravellerTrips(long travellerId) {
-        return tripRepository.findTripsByTravellerId(travellerId);
+    public List<TripResponse> findTravellerTrips(long travellerId) {
+        List <Trip> responseList = tripRepository.findTripsByTravellerId(travellerId);
+        if(!responseList.isEmpty()){
+            return responseList.stream().map(this::createTripResponse).toList();
+        }
+        return new ArrayList<>();
     }
 
     @Override
-    public List<Trip> findAllTrips() {
-        return tripRepository.findAll();
+    public List<TripResponse> findAllTrips() {
+        return tripRepository.findAll().stream().map(this::createTripResponse).toList();
     }
 
     private String getTravellerName(Long travelerId) {
@@ -166,5 +169,11 @@ public class TripServiceImpl implements TripService {
             return traveller.getFirstName() + " " + traveller.getLastName();
         }
         return ""; // Return an empty string if the traveler is not found
+    }
+
+    private TripResponse createTripResponse(Trip trip){
+        TripResponse tripResponse = new TripResponse();
+        BeanUtils.copyProperties(trip, tripResponse);
+        return tripResponse;
     }
 }
