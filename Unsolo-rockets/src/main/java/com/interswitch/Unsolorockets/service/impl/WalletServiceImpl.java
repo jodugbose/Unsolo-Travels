@@ -15,10 +15,10 @@ import com.interswitch.Unsolorockets.service.EmailService;
 import com.interswitch.Unsolorockets.service.TransferChargeService;
 import com.interswitch.Unsolorockets.service.TransferChargeTransactionService;
 import com.interswitch.Unsolorockets.service.WalletService;
+import com.interswitch.Unsolorockets.utils.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import static com.interswitch.Unsolorockets.utils.AppUtils.generateWalletId;
 import static com.interswitch.Unsolorockets.utils.Templates.generateCreditNotificationHtml;
 import static com.interswitch.Unsolorockets.utils.Templates.generateDebitNotificationHtml;
+import static com.interswitch.Unsolorockets.utils.UserUtil.getLoggedInUser;
 
 @RequiredArgsConstructor
 @Service
@@ -48,21 +49,23 @@ public class WalletServiceImpl implements WalletService {
     private final IPasswordEncoder passwordEncoder;
 
 
-    public void createWallet(long userId, CreateWalletRequest createWalletRequest) throws Exception {
-        Optional<Wallet> wallet = walletRepository.findByUserId(userId);
-        if (wallet.isPresent()){
+    public void createWallet(CreateWalletRequest createWalletRequest) throws Exception {
+        CustomUser user = getLoggedInUser();
+        Optional<Wallet> wallet = walletRepository.findByUserId(user.getId());
+        if (wallet.isPresent()) {
             throw new CommonsException("user already has a wallet", HttpStatus.CONFLICT);
         }
         Wallet newWallet = new Wallet();
         newWallet.setWalletId(generateWalletId());
-        newWallet.setUserId(userId);
+        newWallet.setUserId(user.getId());
         newWallet.setPin(passwordEncoder.encode(createWalletRequest.getPin()));
         walletRepository.save(newWallet);
     }
 
 
-    public WalletDto getWallet(Long userId) throws CommonsException {
-        Wallet wallet = walletRepository.findByUserId(userId).orElseThrow(() -> new CommonsException("user does not have a wallet", HttpStatus.NOT_FOUND));
+    public WalletDto getWallet() throws CommonsException {
+        CustomUser user = getLoggedInUser();
+        Wallet wallet = walletRepository.findByUserId(user.getId()).orElseThrow(() -> new CommonsException("user does not have a wallet", HttpStatus.NOT_FOUND));
         WalletDto walletDto = new WalletDto();
         walletDto.setBalance(wallet.getBalance());
         walletDto.setWalletId(wallet.getWalletId());
@@ -71,8 +74,10 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     @Transactional
-    public TransferResponse transfer(Long userId, TransferRequestDto transferRequestDto) throws CommonsException, IOException {
-        Wallet wallet = walletRepository.findByUserId(userId).orElseThrow(() -> new CommonsException("user does not have a wallet", HttpStatus.NOT_FOUND));
+    public TransferResponse transfer(TransferRequestDto transferRequestDto) throws CommonsException {
+        CustomUser user = getLoggedInUser();
+
+        Wallet wallet = walletRepository.findByUserId(user.getId()).orElseThrow(() -> new CommonsException("user does not have a wallet", HttpStatus.NOT_FOUND));
         Wallet receiverWallet = walletRepository.findWalletByWalletId(transferRequestDto.getWalletId()).orElseThrow(() -> new CommonsException("wallet does not exist", HttpStatus.NOT_FOUND));
         TransferChargeDto transferCharge = transferChargeService.getCharge();
         if (wallet.getBalance().compareTo(transferRequestDto.getAmount().add(transferCharge.getCharge())) < 0) {

@@ -2,6 +2,7 @@ package com.interswitch.Unsolorockets.controllers;
 
 import com.interswitch.Unsolorockets.exceptions.InvalidNinValidationException;
 import com.interswitch.Unsolorockets.exceptions.UserAlreadyExistException;
+import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.service.KycService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -17,8 +18,9 @@ import reactor.core.publisher.Mono;
 public class KycController {
     private static final Logger LOGGER = LoggerFactory.getLogger(KycController.class);
     private final KycService kycService;
+
     @GetMapping("/nin/{nin_id}")
-    public ResponseEntity<Mono<?>> verifyNIN(@PathVariable(value = "nin_id") String ninId) throws InvalidNinValidationException,IllegalArgumentException, UserAlreadyExistException{
+    public ResponseEntity<Mono<?>> verifyNIN(@PathVariable(value = "nin_id") String ninId) throws InvalidNinValidationException, IllegalArgumentException, UserAlreadyExistException, UserNotFoundException {
         var kyc = kycService.ninValidationRequest(ninId);
         LOGGER.info("Verify NIN: {}", ninId);
         return new ResponseEntity<>(kyc, HttpStatus.OK);

@@ -10,9 +10,9 @@ import java.io.IOException;
 
 public interface WalletService {
 
-    void createWallet(long userId, CreateWalletRequest createWalletRequest) throws Exception;
+    void createWallet(CreateWalletRequest createWalletRequest) throws Exception;
 
-    WalletDto getWallet(Long userId) throws CommonsException;
+    WalletDto getWallet() throws CommonsException;
 
-    TransferResponse transfer(Long userId, TransferRequestDto transferRequestDto) throws CommonsException, IOException;
+    TransferResponse transfer(TransferRequestDto transferRequestDto) throws CommonsException, IOException;
 }
