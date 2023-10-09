@@ -99,10 +99,12 @@ public class UserServiceImpl implements UserService {
 //        emailService.sendMail(email, subject, body, "text/html");
 
         if (createdUser instanceof Traveller) {
+            createdUser.setRole(Role.TRAVELLER);
             travellerRepository.save((Traveller) createdUser);
         }
 
         if (createdUser instanceof Admin) {
+            createdUser.setRole(Role.ADMIN);
             adminRepository.save((Admin) createdUser);
         }
 
@@ -261,6 +263,7 @@ public class UserServiceImpl implements UserService {
         User user = userOptional.get();
 
         return DashboardResponse.builder()
+                .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .description(user.getDescription())

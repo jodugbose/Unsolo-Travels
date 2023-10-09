@@ -2,6 +2,7 @@ package com.interswitch.Unsolorockets.service.impl;
 
 import com.interswitch.Unsolorockets.dtos.requests.DeleteRequest;
 import com.interswitch.Unsolorockets.dtos.requests.TripRequest;
+import com.interswitch.Unsolorockets.dtos.responses.BuddyResponse;
 import com.interswitch.Unsolorockets.dtos.responses.TripResponse;
 import com.interswitch.Unsolorockets.exceptions.TripNotFoundException;
 import com.interswitch.Unsolorockets.exceptions.UserException;
@@ -14,6 +15,8 @@ import com.interswitch.Unsolorockets.respository.TripRepository;
 import com.interswitch.Unsolorockets.service.TripService;
 import com.interswitch.Unsolorockets.utils.AppUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TripServiceImpl implements TripService {
     private final TripRepository tripRepository;
@@ -33,20 +37,32 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public TripResponse createTrip(TripRequest request) throws UserException {
+        log.info(String.valueOf(request));
+
         Optional<Traveller> optionalTraveller = travellerRepository.findById(Long.valueOf(request.getTravellerId()));
+        log.info(String.valueOf(request));
         if (optionalTraveller.isEmpty()) {
             throw new UserNotFoundException();
         }
+
+        log.info(String.valueOf(request));
+
         Traveller traveller = optionalTraveller.get();
         Trip trip = new Trip();
         BeanUtils.copyProperties(request, trip);
+
+        log.info(String.valueOf(trip));
+
         LocalDate departureDate = appUtils.createLocalDate(request.getDepartureDate());
         LocalDate arrivalDate = appUtils.createLocalDate(request.getArrivalDate());
         trip.setDepartureDate(departureDate);
         trip.setArrivalDate(arrivalDate);
         trip.setTravellerId(traveller.getId());
         trip.setJourneyType(JourneyType.valueOf(request.getJourneyType().toUpperCase()));
+
+        log.info(String.valueOf(request));
         tripRepository.save(trip);
+
         TripResponse tripResponse = new TripResponse();
         BeanUtils.copyProperties(request, tripResponse);
         tripResponse.setTravellerName(traveller.getFirstName());
@@ -121,31 +137,54 @@ public class TripServiceImpl implements TripService {
         return "Delete success";
     }
     @Override
-    public List<String> findMatchingTravellers(TripRequest filterRequest) {
+    public List<BuddyResponse> findMatchingTravellers(TripRequest filterRequest) {
         List<Trip> trips = tripRepository.findAll();
 
+        final LocalDate arrivalDate;
+        if(filterRequest.getArrivalDate() != null) {
+            arrivalDate = appUtils.createLocalDate(filterRequest.getDepartureDate());
+        }else {
+            arrivalDate = null;
+        }
         // Step 1: Filter by country
         List<Trip> matchingTrips = trips.stream()
                 .filter(trip -> trip.getCountry().equalsIgnoreCase(filterRequest.getCountry()))
-                .collect(Collectors.toList());
-
-        // Step 2: Check if country matched
-        if (matchingTrips.isEmpty()) {
-            return Collections.emptyList(); // No match if the country doesn't match
-        }
-
-
-        // Step 3: Filter by journey type
-        matchingTrips = matchingTrips.stream()
                 .filter(trip -> trip.getJourneyType().toString().equalsIgnoreCase(filterRequest.getJourneyType()))
-                .collect(Collectors.toList());
+                .filter(trip -> arrivalDate == null || trip.getArrivalDate().isEqual(arrivalDate))
+                .toList();
+
+//        // Step 2: Check if country matched
+//        if (matchingTrips.isEmpty()) {
+//            return Collections.emptyList(); // No match if the country doesn't match
+//        }
+//
+//
+//        // Step 3: Filter by journey type
+//        matchingTrips = matchingTrips.stream()
+//                .filter(trip -> trip.getJourneyType().toString().equalsIgnoreCase(filterRequest.getJourneyType()))
+//                .collect(Collectors.toList());
 
         // Step 4: Map to traveler names
-        List<String> matchingTravellers = matchingTrips.stream()
-                .map(trip -> getTravellerName(trip.getTravellerId()))
+        List<BuddyResponse> matchingTravellers = matchingTrips.stream()
+                .map(this::convertTripToTripResponse)
                 .collect(Collectors.toList());
 
         return matchingTravellers;
+    }
+
+    private BuddyResponse convertTripToTripResponse(Trip trip) {
+        return BuddyResponse.builder()
+                .buddyId(trip.getTravellerId())
+                .buddyName(getTravellerName(trip.getTravellerId()))
+                .aboutTheTrip(trip.getAboutTheTrip())
+                .country(trip.getCountry())
+                .splitCost(trip.isSplitCost())
+                .arrivalDate(trip.getArrivalDate())
+                .departureDate(trip.getDepartureDate())
+                .firstTime(trip.isFirstTime())
+                .journeyType(trip.getJourneyType().toString())
+                .budget(trip.getBudget())
+                .build();
     }
 
     @Override

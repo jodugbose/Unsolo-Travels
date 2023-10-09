@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class CommonsException extends Exception {
+public class CommonsException extends RuntimeException {
     private final HttpStatus status;
 
     public CommonsException(String message, HttpStatus status) {

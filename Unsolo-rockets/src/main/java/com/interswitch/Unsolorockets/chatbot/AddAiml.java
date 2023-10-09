@@ -4,9 +4,11 @@ import org.alicebot.ab.Bot;
 import org.alicebot.ab.MagicBooleans;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 
+@Component
 public class AddAiml {
 
 	private static final boolean TRACE_MODE = false;
