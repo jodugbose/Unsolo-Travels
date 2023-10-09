@@ -28,7 +28,7 @@ public class AppUtils {
         return ninId != null && ninId.matches(regex);
     }
 
-    public LocalDate createLocalDate(String dateStr) throws UserException {
+    public LocalDate createLocalDate(String dateStr) {
         if (dateStr != null) {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");

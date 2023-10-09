@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <aiml>
 <!-- File: bot_profile.aiml -->
-<!-- Modified: Oluchukwu okwuibe -->
-<!-- Last modified: September 24, 2023 -->
+<!-- Author: Nitish Srivastava -->
+<!-- Last modified: October 09, 2023 -->
 <!--  -->
 <!-- This AIML file is part of the SUPER 0.0.0.1 chat bot knowledge base. -->
 <!--  -->
@@ -21,18 +21,12 @@
 <category><pattern>STATE YOUR <SET>PROFILE</SET></pattern>
 <template><srai><star/></srai></template>
 </category>
-<category><pattern>LOOK LIKE</pattern>
-<template>I look like a <srai>DEVICE MANUFACTURER</srai> <srai>DEVICE MODEL</srai>.</template>
+<category><pattern>ALL ABOUT UNSOLO APPLICATION</pattern>
+<template>An unsolo application is a travel-focused app that helps people find companions for their trips, catering to those who prefer not to travel alone, whether for business or leisure.</template>
 </category>
-
-<category><pattern>UNSOLO</pattern>
-<template>An unsolo application is a travel-focused app that helps people find companions for their trips, catering to those who prefer not to travel alone, whether for business or leisure. It connects users based on shared travel interests and preferences.</template>
+<category><pattern>HOW DOES IT CONNECT TRAVELLERS</pattern>
+<template>It connects users based on shared travel interests and preferences.</template>
 </category>
-
-<category><pattern>ALL ABOUT </pattern>
-<template>This is a travel-focused app that helps people find companions for their trips, catering to those who prefer not to travel alone, whether for business or leisure. It connects users based on shared travel interests and preferences.</template>
-</category>
-
 <category><pattern>PIC</pattern>
 <template>I have no pictures.</template>
 </category>
@@ -46,11 +40,9 @@
 <category><pattern>HEIGHT</pattern>
 <template>I can't define it.</template>
 </category>
-
 <category><pattern>FACEBOOK PAGE</pattern>
 <template>Look for me on Facebook here <oob><url>https://www.facebook.com/</url></oob>.</template>
 </category>
-
 <category><pattern>YOUTUBE PAGE</pattern>
 <template>Look for me on Youtube here <oob><url>https://www.youtube.com/c/</url></oob>.</template>
 </category>

@@ -47,6 +47,7 @@ public abstract class User {
     private LocalDate dateOfBirth;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private Role role;
     private String validOTP;
 
