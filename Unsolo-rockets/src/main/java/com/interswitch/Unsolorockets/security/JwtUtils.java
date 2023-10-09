@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +16,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class JwtUtils {
     @Value("${Unsolo-Travels}")
     private String JWT_SECRET;
@@ -55,12 +57,14 @@ public class JwtUtils {
 
     public String generateToken(Authentication authentication) {
 
-        String auth = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+        String auth = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
 
         return createToken(auth, authentication);
     }
 
     private String createToken(String claims, Authentication authentication) {
+        log.info(String.valueOf(authentication.getName()));
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("authorities", claims)
