@@ -2,6 +2,7 @@ package com.interswitch.Unsolorockets.controllers;
 
 import com.interswitch.Unsolorockets.dtos.requests.DeleteRequest;
 import com.interswitch.Unsolorockets.dtos.requests.TripRequest;
+import com.interswitch.Unsolorockets.dtos.responses.BuddyResponse;
 import com.interswitch.Unsolorockets.dtos.responses.TripResponse;
 import com.interswitch.Unsolorockets.exceptions.TripNotFoundException;
 import com.interswitch.Unsolorockets.exceptions.UserException;
@@ -10,6 +11,7 @@ import com.interswitch.Unsolorockets.service.TripService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +42,8 @@ public class TripController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @PostMapping("/match")
-    public ResponseEntity<List<String>> findMatchingTravellers(@RequestBody TripRequest filterRequest) {
-        List<String> matchingTravellers = tripService.findMatchingTravellers(filterRequest);
+    public ResponseEntity<List<BuddyResponse>> findMatchingTravellers(@RequestBody TripRequest filterRequest) {
+        List<BuddyResponse> matchingTravellers = tripService.findMatchingTravellers(filterRequest);
         return new ResponseEntity<>(matchingTravellers, HttpStatus.OK);
     }
 

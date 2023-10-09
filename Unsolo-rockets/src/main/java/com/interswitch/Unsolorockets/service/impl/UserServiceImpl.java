@@ -79,6 +79,9 @@ public class UserServiceImpl implements UserService {
         String otp = String.valueOf(appUtils.generateOTP());
         createdUser.setValidOTP(passwordEncoder.encode(otp));
 
+        createdUser.setNinId(null);
+        createdUser.setKycVerified(false);
+
         String url = "http://" + request.getServerName() + ":8080" + "/api/v1/verify-email?token="
                 + token + "&email=" + userDto.getEmail();
 
@@ -98,10 +101,12 @@ public class UserServiceImpl implements UserService {
         emailService.sendMail(email, subject, body, "text/html");
 
         if (createdUser instanceof Traveller) {
+            createdUser.setRole(Role.TRAVELLER);
             travellerRepository.save((Traveller) createdUser);
         }
 
         if (createdUser instanceof Admin) {
+            createdUser.setRole(Role.ADMIN);
             adminRepository.save((Admin) createdUser);
         }
 
@@ -259,6 +264,7 @@ public class UserServiceImpl implements UserService {
         User user = userOptional.get();
 
         return DashboardResponse.builder()
+                .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .description(user.getDescription())
