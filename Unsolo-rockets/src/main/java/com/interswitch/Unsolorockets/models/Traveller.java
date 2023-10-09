@@ -1,21 +1,23 @@
 package com.interswitch.Unsolorockets.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
 @Entity
 @Table(name = "travellers")
 public class Traveller extends User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-//    private ArrayList<Trip> trips = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<FlightBooking> flightBookings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<HotelBooking> hotelBookings = new ArrayList<>();
 
 
 }

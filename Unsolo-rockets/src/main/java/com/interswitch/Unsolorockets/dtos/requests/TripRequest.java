@@ -2,9 +2,11 @@ package com.interswitch.Unsolorockets.dtos.requests;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Setter
 @Getter
+@ToString
 public class TripRequest {
 
     private String travellerId;

@@ -1,6 +1,7 @@
 package com.interswitch.Unsolorockets.utils;
 
 import com.interswitch.Unsolorockets.exceptions.UserException;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +23,12 @@ public class AppUtils {
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return email.matches(regex);
     }
+    public static boolean validateNinId(String ninId) {
+        String regex = "\\d{11}";
+        return ninId != null && ninId.matches(regex);
+    }
 
-    public LocalDate createLocalDate(String dateStr) throws UserException {
+    public LocalDate createLocalDate(String dateStr) {
         if (dateStr != null) {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -34,6 +39,10 @@ public class AppUtils {
         } else {
             throw new UserException("Date cannot be null", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public static String generateWalletId(){
+       return RandomStringUtils.randomNumeric(10);
     }
 
 }

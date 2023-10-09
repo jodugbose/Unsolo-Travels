@@ -3,6 +3,7 @@ package com.interswitch.Unsolorockets.service.impl;
 import com.interswitch.Unsolorockets.dtos.requests.OTPRequest;
 import com.interswitch.Unsolorockets.dtos.requests.UserDto;
 import com.interswitch.Unsolorockets.dtos.requests.UserUpdateRequest;
+import com.interswitch.Unsolorockets.dtos.responses.DashboardResponse;
 import com.interswitch.Unsolorockets.dtos.responses.UserProfileResponse;
 import com.interswitch.Unsolorockets.exceptions.*;
 import com.interswitch.Unsolorockets.models.Admin;
@@ -14,6 +15,7 @@ import com.interswitch.Unsolorockets.respository.AdminRepository;
 import com.interswitch.Unsolorockets.respository.TravellerRepository;
 import com.interswitch.Unsolorockets.security.IPasswordEncoder;
 import com.interswitch.Unsolorockets.service.EmailService;
+import com.interswitch.Unsolorockets.service.TripService;
 import com.interswitch.Unsolorockets.service.UserService;
 import com.interswitch.Unsolorockets.utils.AppUtils;
 import com.interswitch.Unsolorockets.utils.JwtTokenUtils;
@@ -26,7 +28,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
     private final HttpServletRequest request;
     private final AppUtils appUtils;
+    private final TripService tripService;
 
     private static void assignRole(UserDto userDto, User user) {
         if (userDto.getRole() == null || userDto.getRole().equalsIgnoreCase(String.valueOf(Role.TRAVELLER))) {
@@ -72,6 +77,7 @@ public class UserServiceImpl implements UserService {
         createdUser.setTokenForEmail(token);
 
         String otp = String.valueOf(appUtils.generateOTP());
+        createdUser.setValidOTP(otp);
         createdUser.setValidOTP(passwordEncoder.encode(otp));
 
         String url = "http://" + request.getServerName() + ":8080" + "/api/v1/verify-email?token="
@@ -93,10 +99,12 @@ public class UserServiceImpl implements UserService {
 //        emailService.sendMail(email, subject, body, "text/html");
 
         if (createdUser instanceof Traveller) {
+            createdUser.setRole(Role.TRAVELLER);
             travellerRepository.save((Traveller) createdUser);
         }
 
         if (createdUser instanceof Admin) {
+            createdUser.setRole(Role.ADMIN);
             adminRepository.save((Admin) createdUser);
         }
 
@@ -128,32 +136,6 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    public String authenticateUser(String email, String password) throws InvalidCredentialsException {
-        Optional<User> userOptional;
-
-        userOptional = adminRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            userOptional = travellerRepository.findByEmail(email);
-        }
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
-
-            if (!user.isVerified()) {
-                throw new InvalidCredentialsException("User has not been verified by email.");
-            }
-
-            if (confirmUserPasswords(password, user.getPassword())) {
-                return JwtTokenUtils.generateToken(user);
-            } else {
-                throw new InvalidCredentialsException("Incorrect password");
-            }
-        } else {
-            throw new InvalidCredentialsException("User not found");
-        }
-    }
-
     @Override
     public String verifyOTP(OTPRequest otpRequest) throws UserNotFoundException {
         Optional<User> userOptional;
@@ -170,7 +152,8 @@ public class UserServiceImpl implements UserService {
             return "This account is already verified";
         }
 
-        if (passwordEncoder.matches(otpRequest.getOtp(), user.getValidOTP())) {
+         //if (passwordEncoder.matches(otpRequest.getOtp(), user.getValidOTP())) {
+        if(otpRequest.getOtp().equals(user.getValidOTP())){
             user.setVerified(true);
             if (user.getRole().equals(Role.ADMIN)) {
                 adminRepository.save((Admin) user);
@@ -208,16 +191,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileResponse updateUserDetails(long id, UserUpdateRequest userUpdateRequest) throws UserNotFoundException {
-        Optional<User> userOptional;
+    public UserProfileResponse updateUserDetails(String email, UserUpdateRequest userUpdateRequest) throws UserNotFoundException {
+        Optional<User> userOptional = adminRepository.findByEmail(email);
 
-        userOptional = adminRepository.findByEmail(userUpdateRequest.getEmail());
         if (userOptional.isEmpty()) {
-            userOptional = travellerRepository.findByEmail(userUpdateRequest.getEmail());
+            userOptional = travellerRepository.findByEmail(email);
         }
+
         if (userOptional.isEmpty()) {
             throw new UserNotFoundException();
         }
+
         User user = userOptional.get();
 
         if (userUpdateRequest.getFirstName() != null) {
@@ -236,6 +220,18 @@ public class UserServiceImpl implements UserService {
             user.setGender(Gender.valueOf(userUpdateRequest.getGender().toUpperCase()));
         }
 
+        if (userUpdateRequest.getLocation() != null) {
+            user.setLocation(userUpdateRequest.getLocation());
+        }
+
+        if (userUpdateRequest.getDescription() != null) {
+            user.setDescription(userUpdateRequest.getDescription());
+        }
+
+        if (userUpdateRequest.getProfilePicture() != null) {
+            user.setProfilePicture(userUpdateRequest.getProfilePicture());
+        }
+
         if (user.getRole().equals(Role.ADMIN)) {
             adminRepository.save((Admin) user);
         } else {
@@ -247,8 +243,30 @@ public class UserServiceImpl implements UserService {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .gender(user.getGender().toString())
+                .location(user.getLocation())
+                .description(user.getDescription())
+                .profilePicture(user.getProfilePicture())
                 .build();
     }
 
+    public DashboardResponse userDashboard(String email) throws UserNotFoundException {
+        Optional<User> userOptional = adminRepository.findByEmail(email);
 
+        if (userOptional.isEmpty()) {
+            userOptional = travellerRepository.findByEmail(email);
+        }
+
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+        User user = userOptional.get();
+
+        return DashboardResponse.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .description(user.getDescription())
+                .build();
+    }
 }

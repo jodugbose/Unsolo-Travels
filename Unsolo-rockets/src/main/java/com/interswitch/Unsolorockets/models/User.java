@@ -47,11 +47,23 @@ public abstract class User {
     private LocalDate dateOfBirth;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private Role role;
     private String validOTP;
 
     private String tokenForEmail;
-
+    @Column(unique = true)
+    private String ninId;
+    private Boolean kycVerified;
     @CreationTimestamp
     private Date createdAt;
+
+    @Column
+    private String location;
+
+    @Column
+    private String description;
+
+    @Column
+    private String profilePicture;
 }

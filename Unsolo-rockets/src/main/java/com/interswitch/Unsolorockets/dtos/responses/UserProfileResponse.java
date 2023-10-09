@@ -13,4 +13,7 @@ public class UserProfileResponse {
     private String email;
     private String phoneNumber;
     private String gender;
+    private String location;
+    private String description;
+    private String profilePicture;
 }

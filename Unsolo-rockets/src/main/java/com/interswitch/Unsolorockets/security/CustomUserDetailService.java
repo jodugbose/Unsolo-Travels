@@ -4,15 +4,14 @@ import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.models.User;
 import com.interswitch.Unsolorockets.respository.AdminRepository;
 import com.interswitch.Unsolorockets.respository.TravellerRepository;
+import com.interswitch.Unsolorockets.utils.CustomUser;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.jackson.JsonComponent;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -40,7 +39,6 @@ public class CustomUserDetailService implements UserDetailsService {
         } catch (UserNotFoundException e) {
             throw new RuntimeException(e);
         }
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(), user.getPassword(), Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
+        return new CustomUser(user.getId(), user.getPassword(),user.getEmail(), user.getRole());
     }
 }
