@@ -21,6 +21,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/trip")
+@Slf4j
 public class TripController {
     private final TripService tripService;
 
