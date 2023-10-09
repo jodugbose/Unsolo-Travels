@@ -18,9 +18,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.extern.slf4j.XSlf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -115,10 +119,8 @@ public class TripServiceImpl implements TripService {
             trip.setJourneyType(JourneyType.valueOf(request.getJourneyType().toUpperCase()));
         }
 
-        tripRepository.save(trip);
-
-        TripResponse tripResponse = new TripResponse();
-        BeanUtils.copyProperties(request, tripResponse);
+        Trip savedTrip = tripRepository.save(trip);
+        TripResponse tripResponse = createTripResponse(savedTrip);
         tripResponse.setTravellerName(traveller.getFirstName());
         tripResponse.setArrivalDate(arrivalDate);
         tripResponse.setDepartureDate(departureDate);
@@ -188,22 +190,32 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public List<Trip> findTravellerTrips(long travellerId) {
-        return tripRepository.findTripsByTravellerId(travellerId);
+    public Page<TripResponse> findTravellerTrips(PageRequest pageRequest, long travellerId) {
+        Page <Trip> tripPage = tripRepository.findTripsByTravellerId(pageRequest, travellerId);
+            Page <TripResponse> tripResponsePage = tripPage.map(this::createTripResponse);
+            return new PageImpl<>(tripResponsePage.getContent(), pageRequest, tripPage.getTotalElements());
+
     }
 
     @Override
-    public List<Trip> findAllTrips() {
-        return tripRepository.findAll();
+    public Page<TripResponse> findAllTrips(PageRequest pageRequest) {
+        Page<Trip> tripPage =  tripRepository.findAll(pageRequest);
+        Page<TripResponse> tripResponsePage =  tripPage.map(this::createTripResponse);
+        return new PageImpl<>(tripResponsePage.getContent(), pageRequest, tripPage.getTotalElements());
     }
 
     private String getTravellerName(Long travelerId) {
         Optional<Traveller> optionalTraveller = travellerRepository.findById(travelerId);
         if (optionalTraveller.isPresent()) {
             Traveller traveller = optionalTraveller.get();
-
             return traveller.getFirstName() + " " + traveller.getLastName();
         }
         return ""; // Return an empty string if the traveler is not found
+    }
+
+    private TripResponse createTripResponse(Trip trip){
+        TripResponse tripResponse = new TripResponse();
+        BeanUtils.copyProperties(trip, tripResponse);
+        return tripResponse;
     }
 }

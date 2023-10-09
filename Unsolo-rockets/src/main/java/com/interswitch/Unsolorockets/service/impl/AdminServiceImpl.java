@@ -22,7 +22,7 @@ public class AdminServiceImpl implements AdminService {
     private final DestinationRepository destinationRepository;
     private final PackageRepository packageRepository;
     private final TravellerRepository travellerRepository;
-    private final UserServiceImpl userService;
+//    private final UserServiceImpl userService;
     @Override
     public String createPackage(PackageDto packageDto) throws PackageException {
         if(packageDto.getTitle() == null || packageDto.getTitle().equals("")){
