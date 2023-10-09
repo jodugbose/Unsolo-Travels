@@ -153,8 +153,8 @@ public class UserServiceImpl implements UserService {
             return "This account is already verified";
         }
 
-         //if (passwordEncoder.matches(otpRequest.getOtp(), user.getValidOTP())) {
-        if(otpRequest.getOtp().equals(user.getValidOTP())){
+         if (passwordEncoder.matches(otpRequest.getOtp(), user.getValidOTP())) {
+        //if(otpRequest.getOtp().equals(user.getValidOTP())){
             user.setVerified(true);
             if (user.getRole().equals(Role.ADMIN)) {
                 adminRepository.save((Admin) user);
