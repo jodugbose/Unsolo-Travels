@@ -19,6 +19,4 @@ public interface UserService {
 
     DashboardResponse userDashboard(String email) throws UserNotFoundException;
 
-
-//    List<Trip> viewUserTrips(long travellerId);
 }

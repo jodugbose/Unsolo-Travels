@@ -45,7 +45,6 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
     private final HttpServletRequest request;
     private final AppUtils appUtils;
-    private final TripService tripService;
 
     private static void assignRole(UserDto userDto, User user) {
         if (userDto.getRole() == null || userDto.getRole().equalsIgnoreCase(String.valueOf(Role.TRAVELLER))) {
@@ -57,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileResponse createUser(UserDto userDto) throws UserException, IOException {
+
         boolean isValidEmail = appUtils.validEmail(userDto.getEmail());
         if (!isValidEmail) {
             throw new InvalidEmailException("Email is invalid");
@@ -77,7 +77,6 @@ public class UserServiceImpl implements UserService {
         createdUser.setTokenForEmail(token);
 
         String otp = String.valueOf(appUtils.generateOTP());
-        createdUser.setValidOTP(otp);
         createdUser.setValidOTP(passwordEncoder.encode(otp));
 
         String url = "http://" + request.getServerName() + ":8080" + "/api/v1/verify-email?token="
@@ -96,7 +95,7 @@ public class UserServiceImpl implements UserService {
                         "<a href=" + url + ">verify here</a></p>" +
                         "</body> " +
                         "</html>";
-//        emailService.sendMail(email, subject, body, "text/html");
+        emailService.sendMail(email, subject, body, "text/html");
 
         if (createdUser instanceof Traveller) {
             travellerRepository.save((Traveller) createdUser);
@@ -105,7 +104,6 @@ public class UserServiceImpl implements UserService {
         if (createdUser instanceof Admin) {
             adminRepository.save((Admin) createdUser);
         }
-
 
         return UserProfileResponse.builder()
                 .firstName(createdUser.getFirstName())
@@ -150,8 +148,7 @@ public class UserServiceImpl implements UserService {
             return "This account is already verified";
         }
 
-         //if (passwordEncoder.matches(otpRequest.getOtp(), user.getValidOTP())) {
-        if(otpRequest.getOtp().equals(user.getValidOTP())){
+         if (passwordEncoder.matches(otpRequest.getOtp(), user.getValidOTP())) {
             user.setVerified(true);
             if (user.getRole().equals(Role.ADMIN)) {
                 adminRepository.save((Admin) user);
@@ -159,7 +156,8 @@ public class UserServiceImpl implements UserService {
                 travellerRepository.save((Traveller) user);
             }
             return "Verification successful";
-        } else {
+        }
+         else {
             return "Check the OTP and try again";
         }
     }

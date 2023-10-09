@@ -7,6 +7,8 @@ import com.interswitch.Unsolorockets.exceptions.TripNotFoundException;
 import com.interswitch.Unsolorockets.exceptions.UserException;
 import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.models.Trip;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -16,6 +18,6 @@ public interface TripService {
     String deleteTrip(DeleteRequest request) throws TripNotFoundException, UserNotFoundException;
     List<String> findMatchingTravellers(TripRequest filterRequest);
 
-    List<TripResponse> findTravellerTrips(long travellerId);
-    List<TripResponse> findAllTrips();
+    Page<TripResponse> findTravellerTrips(PageRequest pageRequest, long travellerId);
+    Page<TripResponse> findAllTrips(PageRequest pageRequest);
 }

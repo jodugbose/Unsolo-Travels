@@ -2,11 +2,14 @@ package com.interswitch.Unsolorockets.controllers;
 
 import com.interswitch.Unsolorockets.dtos.requests.DeleteRequest;
 import com.interswitch.Unsolorockets.dtos.requests.TripRequest;
+import com.interswitch.Unsolorockets.dtos.responses.TripResponse;
 import com.interswitch.Unsolorockets.exceptions.TripNotFoundException;
 import com.interswitch.Unsolorockets.exceptions.UserException;
 import com.interswitch.Unsolorockets.exceptions.UserNotFoundException;
 import com.interswitch.Unsolorockets.service.TripService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,14 +46,16 @@ public class TripController {
     }
 
     @GetMapping("{travellerId}")
-    public ResponseEntity<?> viewTravellerTrips(@PathVariable long travellerId){
-        var response = tripService.findTravellerTrips(travellerId);
+    public ResponseEntity<?> viewTravellerTrips(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @PathVariable long travellerId){
+        PageRequest pageRequest = PageRequest.of(page, size);
+        var response = tripService.findTravellerTrips(pageRequest, travellerId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> viewAllTrips(){
-        var response = tripService.findAllTrips();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<?> viewAllTrips(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<TripResponse> tripResponsePage = tripService.findAllTrips(pageRequest);
+        return new ResponseEntity<>(tripResponsePage, HttpStatus.OK);
     }
 }

@@ -15,6 +15,9 @@ import com.interswitch.Unsolorockets.service.TripService;
 import com.interswitch.Unsolorockets.utils.AppUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -148,24 +151,24 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public List<TripResponse> findTravellerTrips(long travellerId) {
-        List <Trip> responseList = tripRepository.findTripsByTravellerId(travellerId);
-        if(!responseList.isEmpty()){
-            return responseList.stream().map(this::createTripResponse).toList();
-        }
-        return new ArrayList<>();
+    public Page<TripResponse> findTravellerTrips(PageRequest pageRequest, long travellerId) {
+        Page <Trip> tripPage = tripRepository.findTripsByTravellerId(pageRequest, travellerId);
+            Page <TripResponse> tripResponsePage = tripPage.map(this::createTripResponse);
+            return new PageImpl<>(tripResponsePage.getContent(), pageRequest, tripPage.getTotalElements());
+
     }
 
     @Override
-    public List<TripResponse> findAllTrips() {
-        return tripRepository.findAll().stream().map(this::createTripResponse).toList();
+    public Page<TripResponse> findAllTrips(PageRequest pageRequest) {
+        Page<Trip> tripPage =  tripRepository.findAll(pageRequest);
+        Page<TripResponse> tripResponsePage =  tripPage.map(this::createTripResponse);
+        return new PageImpl<>(tripResponsePage.getContent(), pageRequest, tripPage.getTotalElements());
     }
 
     private String getTravellerName(Long travelerId) {
         Optional<Traveller> optionalTraveller = travellerRepository.findById(travelerId);
         if (optionalTraveller.isPresent()) {
             Traveller traveller = optionalTraveller.get();
-
             return traveller.getFirstName() + " " + traveller.getLastName();
         }
         return ""; // Return an empty string if the traveler is not found
