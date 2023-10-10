@@ -51,7 +51,9 @@ public class TripServiceImpl implements TripService {
 
         log.info(String.valueOf(request));
 
+
         Traveller traveller = optionalTraveller.get();
+        log.info("============================>"+traveller.getFirstName());
         Trip trip = new Trip();
         BeanUtils.copyProperties(request, trip);
 
@@ -69,6 +71,8 @@ public class TripServiceImpl implements TripService {
 
         TripResponse tripResponse = new TripResponse();
         BeanUtils.copyProperties(request, tripResponse);
+        tripResponse.setDepartureDate(departureDate);
+        tripResponse.setArrivalDate(arrivalDate);
         tripResponse.setTravellerName(traveller.getFirstName());
         return tripResponse;
     }
