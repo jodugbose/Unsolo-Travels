@@ -152,16 +152,16 @@ public class TripServiceImpl implements TripService {
         List<Trip> matchingTrips = trips.stream()
                 .filter(trip -> trip.getCountry().equalsIgnoreCase(filterRequest.getCountry()))
                 .filter(trip -> trip.getJourneyType().toString().equalsIgnoreCase(filterRequest.getJourneyType()))
-                .filter(trip -> arrivalDate == null || trip.getArrivalDate().isEqual(arrivalDate))
+//                .filter(trip -> arrivalDate == null || trip.getArrivalDate().isEqual(arrivalDate))
                 .toList();
 
 //        // Step 2: Check if country matched
-//        if (matchingTrips.isEmpty()) {
-//            return Collections.emptyList(); // No match if the country doesn't match
-//        }
-//
-//
-//        // Step 3: Filter by journey type
+       if (matchingTrips.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+
+        // Step 3: Filter by journey type
 //        matchingTrips = matchingTrips.stream()
 //                .filter(trip -> trip.getJourneyType().toString().equalsIgnoreCase(filterRequest.getJourneyType()))
 //                .collect(Collectors.toList());
